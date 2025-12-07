@@ -1,0 +1,51 @@
+<%= form_with(model: @plant) do |f| %>
+  <% if @plant.errors.any? %>
+    <div class="errors">
+      <h2><%= pluralize(@plant.errors.count, "error") %> prohibited this plant from being saved:</h2>
+      <ul>
+        <% @plant.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+
+  <div>
+    <%= f.label :variety %><br>
+    <%= f.text_field :variety %>
+  </div>
+
+  <div>
+    <%= f.label :sowing_method %><br>
+    <%= f.select :sowing_method, Plant.sowing_methods.keys.map { |m| [m.humanize, m] }, include_blank: true %>
+  </div>
+
+  <div>
+    <%= f.label :weeks_before_last_frost_to_start, "Weeks before last frost to start indoors" %><br>
+    <%= f.number_field :weeks_before_last_frost_to_start %>
+  </div>
+
+  <div>
+    <%= f.label :weeks_before_last_frost_to_transplant, "Weeks before last frost to begin hardening off" %><br>
+    <%= f.number_field :weeks_before_last_frost_to_transplant %>
+  </div>
+
+  <div>
+    <%= f.label :weeks_after_last_frost_to_plant, "Weeks after last frost to plant" %><br>
+    <%= f.number_field :weeks_after_last_frost_to_plant %>
+  </div>
+
+  <div>
+    <%= f.label :notes %><br>
+    <%= f.text_area :notes, rows: 4 %>
+  </div>
+
+  <div>
+    <%= f.submit %>
+  </div>
+<% end %>

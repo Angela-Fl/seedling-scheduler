@@ -1,0 +1,33 @@
+zinnia:
+  name: Zinnia
+  variety: Mixed
+  sowing_method: indoor
+  weeks_before_last_frost_to_start: 6
+  weeks_before_last_frost_to_transplant: 1
+  weeks_after_last_frost_to_plant: 1
+  notes: Needs warmth, hates frost.
+
+sunflower:
+  name: Sunflower
+  variety: Autumn Beauty
+  sowing_method: direct_sow
+  weeks_after_last_frost_to_plant: 1
+  notes: Direct sow once soil is warming.
+
+snapdragon:
+  name: Snapdragon
+  variety: Tall mix
+  sowing_method: indoor
+  weeks_before_last_frost_to_start: 10
+  weeks_before_last_frost_to_transplant: 1
+  weeks_after_last_frost_to_plant: 1
+  notes: Cool tolerant.
+
+milkweed:
+  name: Milkweed
+  variety: Common
+  sowing_method: stratify_then_indoor
+  weeks_before_last_frost_to_start: 8
+  weeks_before_last_frost_to_transplant: 2
+  weeks_after_last_frost_to_plant: 2
+  notes: Needs cold stratification.

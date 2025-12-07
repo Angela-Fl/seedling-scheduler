@@ -1,0 +1,58 @@
+<h1><%= @plant.name %></h1>
+
+<p>
+  <strong>Variety:</strong> <%= @plant.variety %><br>
+  <strong>Sowing method:</strong> <%= @plant.sowing_method&.humanize %><br>
+  <strong>Notes:</strong> <%= simple_format(@plant.notes) %>
+</p>
+
+<p>
+  <strong>Timing:</strong><br>
+  <% if @plant.weeks_before_last_frost_to_start.present? %>
+    Start indoors: <%= @plant.weeks_before_last_frost_to_start %> weeks before frost<br>
+  <% end %>
+  <% if @plant.weeks_before_last_frost_to_transplant.present? && @plant.sowing_method != "direct_sow" %>
+    Harden off: <%= @plant.weeks_before_last_frost_to_transplant %> weeks before frost<br>
+  <% end %>
+  <% if @plant.weeks_after_last_frost_to_plant.present? %>
+    <% if @plant.sowing_method == "direct_sow" %>
+      Plant seeds: <%= @plant.weeks_after_last_frost_to_plant %> weeks after frost
+    <% else %>
+      Plant seedlings: <%= @plant.weeks_after_last_frost_to_plant %> weeks after frost
+    <% end %>
+  <% end %>
+</p>
+
+<p>
+  <%= button_to "Regenerate tasks", regenerate_tasks_plant_path(@plant), method: :post %>
+</p>
+
+<h2>Tasks</h2>
+
+<% if @tasks.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Due date</th>
+        <th>Task</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tasks.each do |task| %>
+        <tr>
+          <td><%= task.due_date.strftime("%B %-d, %Y") %></td>
+          <td><%= task.display_name %></td>
+          <td><%= task.status.humanize %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No tasks yet. Try regenerating them.</p>
+<% end %>
+
+<p>
+  <%= link_to "Edit plant", edit_plant_path(@plant) %> |
+  <%= link_to "Back to plants", plants_path %>
+</p>

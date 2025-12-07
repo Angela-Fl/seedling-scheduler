@@ -1,0 +1,18 @@
+<h1>Garden Settings</h1>
+
+<p>Update your last frost date. All plant tasks will regenerate when saved.</p>
+
+<%= form_with url: settings_path, method: :patch do %>
+  <div>
+    <%= label_tag :frost_date, "Last frost date" %><br>
+    <%= date_field_tag :frost_date, @frost_date %>
+  </div>
+
+  <div>
+    <%= submit_tag "Save and regenerate tasks" %>
+  </div>
+<% end %>
+
+<p>
+  <%= link_to "Back to tasks", root_path %>
+</p>

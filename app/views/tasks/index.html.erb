@@ -1,0 +1,40 @@
+<h1>Upcoming Seedling Tasks</h1>
+
+<p>
+  Last frost date: <strong><%= Setting.frost_date.to_fs(:long) %></strong>
+</p>
+
+<% if @tasks.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Task</th>
+        <th>Plant</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tasks.each do |task| %>
+        <tr>
+          <td><%= task.due_date.to_fs(:long) %></td>
+          <td>
+            <% if task.task_type == "plant" %>
+              <% if task.plant.sowing_method == "direct_sow" %>
+                Plant seeds
+              <% else %>
+                Plant seedlings
+              <% end %>
+            <% else %>
+              <%= task.task_type.humanize %>
+            <% end %>
+          </td>
+          <td><%= task.plant.name %> (<%= task.plant.variety %>)</td>
+          <td><%= task.notes.presence || task.plant.notes %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No tasks yet. Try running <code>bin/rails db:seed</code>.</p>
+<% end %>
