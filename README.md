@@ -82,9 +82,10 @@ The seed file includes three example plants:
 
 ## Documentation
 
-For detailed documentation including data models, workflows, and technical details, see:
+For detailed documentation, see:
 
-**[docs/OVERVIEW.md](docs/OVERVIEW.md)** - Comprehensive guide
+- **[docs/OVERVIEW.md](docs/OVERVIEW.md)** - Comprehensive project guide
+- **[docs/BOOTSTRAP.md](docs/BOOTSTRAP.md)** - Bootstrap integration and customization guide
 
 ## Tech Stack
 
