@@ -68,14 +68,14 @@ When you create or update a plant, the app:
 ```ruby
 # From app/models/plant.rb (lines 31-60)
 
-# START task (indoor/stratify methods only)
+# START task (indoor/stratify/winter_sow methods)
 if weeks_before_last_frost_to_start.present?
   due_date = last_frost_date - weeks_before_last_frost_to_start.weeks
   tasks.create!(task_type: "start", due_date: due_date, ...)
 end
 
-# HARDEN_OFF task (not for direct sow)
-if weeks_before_last_frost_to_transplant.present? && sowing_method != "direct_sow"
+# HARDEN_OFF task (indoor and stratify_then_indoor only)
+if weeks_before_last_frost_to_transplant.present? && sowing_method.in?(%w[indoor stratify_then_indoor])
   due_date = last_frost_date - weeks_before_last_frost_to_transplant.weeks
   tasks.create!(task_type: "harden_off", due_date: due_date, ...)
 end
@@ -95,12 +95,12 @@ The app supports four sowing methods, each generating different tasks:
 |---------------|-------|------------|-------|
 | **indoor** | ✓ Start indoors | ✓ Harden off | ✓ Plant seedlings |
 | **direct_sow** | ✗ | ✗ | ✓ Plant seeds |
-| **winter_sow** | ✗ | ✓ Harden off | ✓ Plant seedlings |
+| **winter_sow** | ✓ Start winter sowing | ✗ | ✓ Plant seedlings |
 | **stratify_then_indoor** | ✓ Start (after stratify) | ✓ Harden off | ✓ Plant seedlings |
 
 **Why these differences?**
 - **Direct sow**: Seeds go straight in the ground, no indoor start or hardening
-- **Winter sow**: Started outdoors in winter, only needs hardening reminder
+- **Winter sow**: Seeds started outdoors in winter containers, already hardened by nature
 - **Stratify then indoor**: Cold treatment first, then indoor start
 
 ---
@@ -128,7 +128,7 @@ has_many :tasks, dependent: :destroy
 | `weeks_after_last_frost_to_plant` | integer | Conditional** | Weeks after frost to plant out |
 | `notes` | text | No | User notes |
 
-*Required for `indoor` and `stratify_then_indoor` methods
+*Required for `indoor`, `stratify_then_indoor`, and `winter_sow` methods
 **Required for `direct_sow` method
 
 **Enums**:
@@ -145,7 +145,7 @@ enum :sowing_method, {
 - `name` must be present
 - `sowing_method` must be present
 - Numeric fields must be >= 0
-- Custom validation: indoor/stratify methods require `weeks_before_last_frost_to_start`
+- Custom validation: indoor/stratify/winter_sow methods require `weeks_before_last_frost_to_start`
 - Custom validation: direct_sow requires `weeks_after_last_frost_to_plant`
 
 **Key Method**:
@@ -406,15 +406,19 @@ The app recognizes that not all plants need hardening off:
 - Seeds go straight in the ground
 - Example: Carrots, beans, sunflowers
 
-**Indoor/stratified/winter sown plants**: Hardening task created
+**Winter sown plants**: No hardening task generated
+- Already outdoors, naturally hardened
+- Example: Echinacea, rudbeckia
+
+**Indoor/stratified plants**: Hardening task created
 - Seedlings need gradual outdoor exposure
 - Example: Tomatoes, peppers, brassicas
 
 **Implementation**:
 ```ruby
-# Only create harden_off task if NOT direct sow
-if weeks_before_last_frost_to_transplant.present? &&
-   sowing_method != "direct_sow"
+# Only create harden_off task for indoor and stratify_then_indoor
+if weeks_before_last_frost_to_transplant.present() &&
+   sowing_method.in?(%w[indoor stratify_then_indoor])
   tasks.create!(task_type: "harden_off", ...)
 end
 ```
@@ -725,11 +729,11 @@ All timing relationships preserved, no manual recalculation needed.
 **Winter Sowing** (outdoor cold stratification):
 ```
 Method: winter_sow
-Start: N/A (done in winter containers)
-Harden: 2 weeks before frost
+Start: 10 weeks before frost (set up winter sowing containers)
+Harden: N/A (already outdoors)
 Plant: 1 week after frost
 ```
-Tasks: Only harden-off and planting reminders
+Tasks: Start reminder and planting date (no hardening needed)
 
 **Cold Stratification Then Indoor**:
 ```

@@ -36,7 +36,7 @@ class PlantTest < ActiveSupport::TestCase
       weeks_after_last_frost_to_plant: 1
     )
     assert_not plant.valid?
-    assert_includes plant.errors[:weeks_before_last_frost_to_start], "is required for indoor sowing methods"
+    assert_includes plant.errors[:weeks_before_last_frost_to_start], "is required for this sowing method"
   end
 
   test "stratify_then_indoor plants require weeks_before_last_frost_to_start" do
@@ -46,16 +46,26 @@ class PlantTest < ActiveSupport::TestCase
       weeks_after_last_frost_to_plant: 1
     )
     assert_not plant.valid?
-    assert_includes plant.errors[:weeks_before_last_frost_to_start], "is required for indoor sowing methods"
+    assert_includes plant.errors[:weeks_before_last_frost_to_start], "is required for this sowing method"
   end
 
-  test "direct_sow plants require weeks_after_last_frost_to_plant" do
+  test "winter_sow plants require weeks_before_last_frost_to_start" do
+    plant = Plant.new(
+      name: "Echinacea",
+      sowing_method: "winter_sow",
+      weeks_after_last_frost_to_plant: 1
+    )
+    assert_not plant.valid?
+    assert_includes plant.errors[:weeks_before_last_frost_to_start], "is required for this sowing method"
+  end
+
+  test "all plants require weeks_after_last_frost_to_plant" do
     plant = Plant.new(
       name: "Sunflower",
       sowing_method: "direct_sow"
     )
     assert_not plant.valid?
-    assert_includes plant.errors[:weeks_after_last_frost_to_plant], "is required for direct sow plants"
+    assert_includes plant.errors[:weeks_after_last_frost_to_plant], "is required for all plants"
   end
 
   test "direct_sow plants are valid with weeks_after_last_frost_to_plant" do
@@ -143,6 +153,39 @@ class PlantTest < ActiveSupport::TestCase
 
     assert_nil plant.tasks.find_by(task_type: "harden_off")
     assert_nil plant.tasks.find_by(task_type: "start")
+    assert_not_nil plant.tasks.find_by(task_type: "plant")
+  end
+
+  test "generate_tasks! creates start task for winter_sow plants" do
+    plant = Plant.create!(
+      name: "Echinacea",
+      sowing_method: "winter_sow",
+      weeks_before_last_frost_to_start: 10,
+      weeks_after_last_frost_to_plant: 1
+    )
+    last_frost = Date.new(2026, 5, 5)
+
+    plant.generate_tasks!(last_frost)
+
+    start_task = plant.tasks.find_by(task_type: "start")
+    assert_not_nil start_task
+    assert_equal last_frost - 10.weeks, start_task.due_date
+  end
+
+  test "generate_tasks! does not create harden_off for winter_sow plants" do
+    plant = Plant.create!(
+      name: "Echinacea",
+      sowing_method: "winter_sow",
+      weeks_before_last_frost_to_start: 10,
+      weeks_before_last_frost_to_transplant: 2,
+      weeks_after_last_frost_to_plant: 1
+    )
+    last_frost = Date.new(2026, 5, 5)
+
+    plant.generate_tasks!(last_frost)
+
+    assert_nil plant.tasks.find_by(task_type: "harden_off")
+    assert_not_nil plant.tasks.find_by(task_type: "start")
     assert_not_nil plant.tasks.find_by(task_type: "plant")
   end
 

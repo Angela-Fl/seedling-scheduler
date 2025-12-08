@@ -2,22 +2,24 @@ require "test_helper"
 
 class PlantsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
-    get plants_index_url
+    get plants_url
     assert_response :success
   end
 
   test "should get show" do
-    get plants_show_url
+    plant = plants(:zinnia)
+    get plant_url(plant)
     assert_response :success
   end
 
   test "should get new" do
-    get plants_new_url
+    get new_plant_url
     assert_response :success
   end
 
   test "should get edit" do
-    get plants_edit_url
+    plant = plants(:zinnia)
+    get edit_plant_url(plant)
     assert_response :success
   end
 end

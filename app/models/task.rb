@@ -22,7 +22,7 @@ class Task < ApplicationRecord
   def display_name
     case task_type
     when "start"
-      "Start indoors"
+      "Start seeds"
     when "harden_off"
       "Begin hardening off"
     when "plant"

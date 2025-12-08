@@ -59,7 +59,7 @@ class PlantsController < ApplicationController
       :sowing_method,
       :weeks_before_last_frost_to_start,
       :weeks_before_last_frost_to_transplant,
-      :weeks_after_last_frost_to_direct_sow,
+      :weeks_after_last_frost_to_plant,
       :notes
     )
   end

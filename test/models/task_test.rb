@@ -83,7 +83,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "display_name for start task" do
     task = tasks(:zinnia_start)
-    assert_equal "Start indoors", task.display_name
+    assert_equal "Start seeds", task.display_name
   end
 
   test "display_name for harden_off task" do

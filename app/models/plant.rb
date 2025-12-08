@@ -23,15 +23,15 @@ class Plant < ApplicationRecord
             allow_nil: true
 
   # Indoor plants should have start weeks defined
-  validate :indoor_plants_have_start_weeks, if: -> { sowing_method.in?(%w[indoor stratify_then_indoor]) }
+  validate :indoor_plants_have_start_weeks, if: -> { sowing_method.in?(%w[indoor stratify_then_indoor winter_sow]) }
 
-  # Direct sow plants should have weeks_after_last_frost_to_plant defined
-  validate :direct_sow_plants_have_plant_weeks, if: -> { sowing_method == "direct_sow" }
+  # All plants should have weeks_after_last_frost_to_plant defined
+  validate :plants_have_plant_weeks
 
   def generate_tasks!(last_frost_date)
     tasks.destroy_all
 
-    # START indoors (for indoor/stratify methods)
+    # START indoors or winter sowing (for indoor/stratify/winter_sow methods)
     if weeks_before_last_frost_to_start.present?
       tasks.create!(
         task_type: "start",
@@ -41,7 +41,7 @@ class Plant < ApplicationRecord
     end
 
     # HARDEN OFF (for seedlings before planting out)
-    if weeks_before_last_frost_to_transplant.present? && sowing_method != "direct_sow"
+    if weeks_before_last_frost_to_transplant.present? && sowing_method.in?(%w[indoor stratify_then_indoor])
       tasks.create!(
         task_type: "harden_off",
         due_date: last_frost_date - weeks_before_last_frost_to_transplant.weeks,
@@ -63,13 +63,13 @@ class Plant < ApplicationRecord
 
   def indoor_plants_have_start_weeks
     if weeks_before_last_frost_to_start.blank?
-      errors.add(:weeks_before_last_frost_to_start, "is required for indoor sowing methods")
+      errors.add(:weeks_before_last_frost_to_start, "is required for this sowing method")
     end
   end
 
-  def direct_sow_plants_have_plant_weeks
+  def plants_have_plant_weeks
     if weeks_after_last_frost_to_plant.blank?
-      errors.add(:weeks_after_last_frost_to_plant, "is required for direct sow plants")
+      errors.add(:weeks_after_last_frost_to_plant, "is required for all plants")
     end
   end
 end
