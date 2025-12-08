@@ -6,4 +6,3 @@ class TasksController < ApplicationController
       .order(:due_date)
   end
 end
-

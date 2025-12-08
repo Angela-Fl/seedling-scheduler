@@ -30,7 +30,7 @@ sunflower = Plant.create!(
   notes: "Direct sow once soil is warming."
 )
 
-[sunflower, zinnia, snapdragon].each do |plant|
+[ sunflower, zinnia, snapdragon ].each do |plant|
   plant.generate_tasks!(Setting.frost_date)
 end
 

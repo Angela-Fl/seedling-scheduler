@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root "tasks#index"
 
-  resource :settings, only: [:edit, :update]
+  resource :settings, only: [ :edit, :update ]
 
   resources :plants do
     member do
@@ -9,5 +9,5 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tasks, only: [:index]
+  resources :tasks, only: [ :index ]
 end

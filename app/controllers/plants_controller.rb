@@ -1,5 +1,5 @@
 class PlantsController < ApplicationController
-  before_action :set_plant, only: [:show, :edit, :update, :destroy, :regenerate_tasks]
+  before_action :set_plant, only: [ :show, :edit, :update, :destroy, :regenerate_tasks ]
 
   def index
     @plants = Plant.order(:name)
