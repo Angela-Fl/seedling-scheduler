@@ -1,35 +1,58 @@
-<h1>Plants</h1>
-
-<p>
-  <%= link_to "Add a new plant", new_plant_path %>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="mb-0">Plants</h1>
+  <%= link_to new_plant_path, class: "btn btn-primary" do %>
+    + Add New Plant
+  <% end %>
+</div>
 
 <% if @plants.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Variety</th>
-        <th>Sowing method</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @plants.each do |plant| %>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
         <tr>
-          <td><%= plant.name %></td>
-          <td><%= plant.variety %></td>
-          <td><%= plant.sowing_method&.humanize %></td>
-          <td>
-            <%= link_to "View", plant_path(plant) %> |
-            <%= link_to "Edit", edit_plant_path(plant) %> |
-            <%= link_to "Delete", plant_path(plant),
-                  data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
-          </td>
+          <th scope="col">Name</th>
+          <th scope="col">Variety</th>
+          <th scope="col">Sowing Method</th>
+          <th scope="col" class="text-end">Actions</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @plants.each do |plant| %>
+          <tr>
+            <td>
+              <%= link_to plant.name, plant_path(plant), class: "text-decoration-none fw-bold" %>
+            </td>
+            <td><%= plant.variety %></td>
+            <td>
+              <% if plant.sowing_method == "direct_sow" %>
+                <span class="badge bg-success">Direct sow</span>
+              <% elsif plant.sowing_method == "indoor" %>
+                <span class="badge bg-info">Start indoors</span>
+              <% elsif plant.sowing_method == "winter_sow" %>
+                <span class="badge bg-primary">Winter sow</span>
+              <% elsif plant.sowing_method == "stratify_then_indoor" %>
+                <span class="badge bg-secondary">Stratify then indoor</span>
+              <% else %>
+                <span class="text-muted">—</span>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <div class="btn-group" role="group">
+                <%= link_to "View", plant_path(plant), class: "btn btn-sm btn-outline-primary" %>
+                <%= link_to "Edit", edit_plant_path(plant), class: "btn btn-sm btn-outline-secondary" %>
+                <%= link_to "Delete", plant_path(plant),
+                      class: "btn btn-sm btn-outline-danger",
+                      data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
-  <p>No plants yet. <%= link_to "Add one", new_plant_path %>.</p>
+  <div class="alert alert-info" role="alert">
+    <p class="mb-2">No plants yet.</p>
+    <%= link_to "Add your first plant", new_plant_path, class: "btn btn-primary" %>
+  </div>
 <% end %>

@@ -1,8 +1,11 @@
 <%= form_with(model: @plant) do |f| %>
+  <%# Error Messages %>
   <% if @plant.errors.any? %>
-    <div class="errors">
-      <h2><%= pluralize(@plant.errors.count, "error") %> prohibited this plant from being saved:</h2>
-      <ul>
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">
+        <%= pluralize(@plant.errors.count, "error") %> prohibited this plant from being saved:
+      </h4>
+      <ul class="mb-0">
         <% @plant.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
@@ -10,42 +13,57 @@
     </div>
   <% end %>
 
-  <div>
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
+  <%# Name Field %>
+  <div class="mb-3">
+    <%= f.label :name, class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", placeholder: "e.g., Tomato" %>
   </div>
 
-  <div>
-    <%= f.label :variety %><br>
-    <%= f.text_field :variety %>
+  <%# Variety Field %>
+  <div class="mb-3">
+    <%= f.label :variety, class: "form-label" %>
+    <%= f.text_field :variety, class: "form-control", placeholder: "e.g., Cherry Roma" %>
   </div>
 
-  <div>
-    <%= f.label :sowing_method %><br>
-    <%= f.select :sowing_method, Plant.sowing_methods.keys.map { |m| [m.humanize, m] }, include_blank: true %>
+  <%# Sowing Method Dropdown %>
+  <div class="mb-3">
+    <%= f.label :sowing_method, class: "form-label" %>
+    <%= f.select :sowing_method,
+                 Plant.sowing_methods.keys.map { |m| [m.humanize, m] },
+                 { include_blank: "Select a method" },
+                 class: "form-select" %>
+    <div class="form-text">Choose whether to start indoors or direct sow.</div>
   </div>
 
-  <div>
-    <%= f.label :weeks_before_last_frost_to_start, "Weeks before last frost to start seeds" %><br>
-    <%= f.number_field :weeks_before_last_frost_to_start %>
+  <%# Weeks Before Frost - Start Indoors %>
+  <div class="mb-3">
+    <%= f.label :weeks_before_last_frost_to_start, "Weeks before last frost to start indoors", class: "form-label" %>
+    <%= f.number_field :weeks_before_last_frost_to_start, class: "form-control", min: 0 %>
+    <div class="form-text">Leave blank if not starting indoors.</div>
   </div>
 
-  <div>
-    <%= f.label :weeks_before_last_frost_to_transplant, "Weeks before last frost to begin hardening off" %><br>
-    <%= f.number_field :weeks_before_last_frost_to_transplant %>
+  <%# Weeks Before Frost - Hardening Off %>
+  <div class="mb-3">
+    <%= f.label :weeks_before_last_frost_to_transplant, "Weeks before last frost to begin hardening off", class: "form-label" %>
+    <%= f.number_field :weeks_before_last_frost_to_transplant, class: "form-control", min: 0 %>
+    <div class="form-text">Only applies if starting indoors.</div>
   </div>
 
-  <div>
-    <%= f.label :weeks_after_last_frost_to_plant, "Weeks after last frost to plant" %><br>
-    <%= f.number_field :weeks_after_last_frost_to_plant %>
+  <%# Weeks After Frost - Plant %>
+  <div class="mb-3">
+    <%= f.label :weeks_after_last_frost_to_plant, "Weeks after last frost to plant", class: "form-label" %>
+    <%= f.number_field :weeks_after_last_frost_to_plant, class: "form-control", min: 0 %>
   </div>
 
-  <div>
-    <%= f.label :notes %><br>
-    <%= f.text_area :notes, rows: 4 %>
+  <%# Notes Textarea %>
+  <div class="mb-3">
+    <%= f.label :notes, class: "form-label" %>
+    <%= f.text_area :notes, rows: 4, class: "form-control", placeholder: "Add any special growing notes..." %>
   </div>
 
-  <div>
-    <%= f.submit %>
+  <%# Submit Button %>
+  <div class="d-grid gap-2 d-md-flex">
+    <%= f.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", plants_path, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>

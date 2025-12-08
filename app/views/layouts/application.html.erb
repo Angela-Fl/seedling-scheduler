@@ -30,15 +30,53 @@
   </head>
 
   <body>
-    <header>
-      <nav>
-        <%= link_to "Upcoming Tasks", root_path %> |
-        <%= link_to "Plants", plants_path %> |
-        <%= link_to "Settings", edit_settings_path %>
-      </nav>
-      <hr>
-    </header>
+    <%# Bootstrap Navigation Bar %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <%= link_to "Seedling Scheduler", root_path, class: "navbar-brand" %>
 
-    <%= yield %>
+        <%# Mobile hamburger toggle %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <%# Navigation links %>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <%= link_to "Upcoming Tasks", root_path, class: "nav-link #{current_page?(root_path) ? 'active' : ''}" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Plants", plants_path, class: "nav-link #{current_page?(plants_path) ? 'active' : ''}" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Settings", edit_settings_path, class: "nav-link #{current_page?(edit_settings_path) ? 'active' : ''}" %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <%# Main Content Container %>
+    <div class="container mt-4">
+      <%# Flash messages (if added later) %>
+      <% if flash.any? %>
+        <% flash.each do |type, message| %>
+          <div class="alert alert-<%= type == 'notice' ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
+      <% end %>
+
+      <%= yield %>
+    </div>
+
+    <%# Optional Footer %>
+    <footer class="mt-5 py-4 bg-light">
+      <div class="container text-center text-muted">
+        <small>Seedling Scheduler &copy; <%= Date.current.year %></small>
+      </div>
+    </footer>
   </body>
 </html>

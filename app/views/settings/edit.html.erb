@@ -1,18 +1,25 @@
-<h1>Garden Settings</h1>
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h1 class="mb-4">Garden Settings</h1>
 
-<p>Update your last frost date. All plant tasks will regenerate when saved.</p>
+    <div class="alert alert-info" role="alert">
+      Update your last frost date. All plant tasks will regenerate when saved.
+    </div>
 
-<%= form_with url: settings_path, method: :patch do %>
-  <div>
-    <%= label_tag :frost_date, "Last frost date" %><br>
-    <%= date_field_tag :frost_date, @frost_date %>
+    <%= form_with url: settings_path, method: :patch do %>
+      <div class="mb-3">
+        <%= label_tag :frost_date, "Last frost date", class: "form-label" %>
+        <%= date_field_tag :frost_date, @frost_date, class: "form-control" %>
+        <div class="form-text">Typically in spring (e.g., April or May for most regions).</div>
+      </div>
+
+      <div class="d-grid gap-2">
+        <%= submit_tag "Save and regenerate tasks", class: "btn btn-success btn-lg" %>
+      </div>
+    <% end %>
+
+    <div class="mt-3">
+      <%= link_to "← Back to tasks", root_path, class: "btn btn-link" %>
+    </div>
   </div>
-
-  <div>
-    <%= submit_tag "Save and regenerate tasks" %>
-  </div>
-<% end %>
-
-<p>
-  <%= link_to "Back to tasks", root_path %>
-</p>
+</div>

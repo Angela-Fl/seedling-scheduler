@@ -1,58 +1,130 @@
-<h1><%= @plant.name %></h1>
+<div class="row">
+  <div class="col-lg-8">
+    <%# Plant Details Card %>
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h1 class="card-title mb-0 h3"><%= @plant.name %></h1>
+      </div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-3">Variety:</dt>
+          <dd class="col-sm-9"><%= @plant.variety %></dd>
 
-<p>
-  <strong>Variety:</strong> <%= @plant.variety %><br>
-  <strong>Sowing method:</strong> <%= @plant.sowing_method&.humanize %><br>
-  <strong>Notes:</strong> <%= simple_format(@plant.notes) %>
-</p>
+          <dt class="col-sm-3">Sowing method:</dt>
+          <dd class="col-sm-9">
+            <% if @plant.sowing_method == "direct_sow" %>
+              <span class="badge bg-success">Direct sow</span>
+            <% elsif @plant.sowing_method == "indoor" %>
+              <span class="badge bg-info">Start indoors</span>
+            <% elsif @plant.sowing_method == "winter_sow" %>
+              <span class="badge bg-primary">Winter sow</span>
+            <% elsif @plant.sowing_method == "stratify_then_indoor" %>
+              <span class="badge bg-secondary">Stratify then indoor</span>
+            <% else %>
+              <span class="text-muted">Not specified</span>
+            <% end %>
+          </dd>
 
-<p>
-  <strong>Timing:</strong><br>
-  <% if @plant.weeks_before_last_frost_to_start.present? %>
-    Start indoors: <%= @plant.weeks_before_last_frost_to_start %> weeks before frost<br>
-  <% end %>
-  <% if @plant.weeks_before_last_frost_to_transplant.present? && @plant.sowing_method != "direct_sow" %>
-    Harden off: <%= @plant.weeks_before_last_frost_to_transplant %> weeks before frost<br>
-  <% end %>
-  <% if @plant.weeks_after_last_frost_to_plant.present? %>
-    <% if @plant.sowing_method == "direct_sow" %>
-      Plant seeds: <%= @plant.weeks_after_last_frost_to_plant %> weeks after frost
-    <% else %>
-      Plant seedlings: <%= @plant.weeks_after_last_frost_to_plant %> weeks after frost
+          <% if @plant.notes.present? %>
+            <dt class="col-sm-3">Notes:</dt>
+            <dd class="col-sm-9"><%= simple_format(@plant.notes, class: "mb-0") %></dd>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+
+    <%# Timing Information Card %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Planting Timeline</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <% if @plant.weeks_before_last_frost_to_start.present? %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><strong>Start indoors:</strong></span>
+              <span class="badge bg-primary rounded-pill">
+                <%= @plant.weeks_before_last_frost_to_start %> weeks before frost
+              </span>
+            </li>
+          <% end %>
+
+          <% if @plant.weeks_before_last_frost_to_transplant.present? %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><strong>Harden off:</strong></span>
+              <span class="badge bg-info rounded-pill">
+                <%= @plant.weeks_before_last_frost_to_transplant %> weeks before frost
+              </span>
+            </li>
+          <% end %>
+
+          <% if @plant.weeks_after_last_frost_to_plant.present? %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><strong>Plant:</strong></span>
+              <span class="badge bg-success rounded-pill">
+                <%= @plant.weeks_after_last_frost_to_plant %> weeks after frost
+              </span>
+            </li>
+          <% end %>
+        </ul>
+
+        <div class="mt-3">
+          <%= button_to "Regenerate tasks", regenerate_tasks_plant_path(@plant),
+                method: :post,
+                class: "btn btn-outline-primary" %>
+        </div>
+      </div>
+    </div>
+
+    <%# Tasks Table (if @tasks exists) %>
+    <% if defined?(@tasks) && @tasks.any? %>
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Tasks</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">Due Date</th>
+                  <th scope="col">Task Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @tasks.each do |task| %>
+                  <tr>
+                    <td><%= task.due_date.to_fs(:long) %></td>
+                    <td><span class="badge bg-secondary"><%= task.task_type.humanize %></span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     <% end %>
-  <% end %>
-</p>
 
-<p>
-  <%= button_to "Regenerate tasks", regenerate_tasks_plant_path(@plant), method: :post %>
-</p>
+    <%# Action Buttons %>
+    <div class="d-flex gap-2 mb-4">
+      <%= link_to "Edit Plant", edit_plant_path(@plant), class: "btn btn-primary" %>
+      <%= link_to "Delete Plant", plant_path(@plant),
+            class: "btn btn-outline-danger",
+            data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this plant and all its tasks?" } %>
+      <%= link_to "Back to Plants", plants_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
 
-<h2>Tasks</h2>
-
-<% if @tasks.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Due date</th>
-        <th>Task</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @tasks.each do |task| %>
-        <tr>
-          <td><%= task.due_date.strftime("%B %-d, %Y") %></td>
-          <td><%= task.display_name %></td>
-          <td><%= task.status.humanize %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No tasks yet. Try regenerating them.</p>
-<% end %>
-
-<p>
-  <%= link_to "Edit plant", edit_plant_path(@plant) %> |
-  <%= link_to "Back to plants", plants_path %>
-</p>
+  <%# Sidebar %>
+  <div class="col-lg-4">
+    <div class="card bg-light">
+      <div class="card-body">
+        <h5 class="card-title">Quick Tips</h5>
+        <p class="card-text small text-muted">
+          Tasks are automatically generated based on your frost date and planting timeline.
+          Update the timing information above and regenerate tasks to see changes.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
