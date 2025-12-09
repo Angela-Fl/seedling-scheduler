@@ -24,30 +24,40 @@ class PlantsHelperTest < ActionView::TestCase
 
   test "sowing_method_badge returns correct color for direct_sow" do
     badge = sowing_method_badge("direct_sow")
-    assert_includes badge, "badge bg-orange"
+    assert_includes badge, "badge"
+    assert_includes badge, "background-color: #a2cf8f"
+    assert_includes badge, "color: #000000"
     assert_includes badge, "Direct Sow"
   end
 
   test "sowing_method_badge returns correct color for indoor_start" do
     badge = sowing_method_badge("indoor_start")
-    assert_includes badge, "badge bg-teal"
+    assert_includes badge, "badge"
+    assert_includes badge, "background-color: #e9b38e"
+    assert_includes badge, "color: #000000"
     assert_includes badge, "Indoor Start"
   end
 
   test "sowing_method_badge returns correct color for outdoor_start" do
     badge = sowing_method_badge("outdoor_start")
-    assert_includes badge, "badge bg-purple"
+    assert_includes badge, "badge"
+    assert_includes badge, "background-color: #de8ca0"
+    assert_includes badge, "color: #000000"
     assert_includes badge, "Outdoor Start"
   end
 
   test "sowing_method_badge returns correct color for fridge_stratify" do
     badge = sowing_method_badge("fridge_stratify")
-    assert_includes badge, "badge bg-secondary"
+    assert_includes badge, "badge"
+    assert_includes badge, "background-color: #6c757d"
+    assert_includes badge, "color: #ffffff"
     assert_includes badge, "Fridge Stratify"
   end
 
   test "sowing_method_badge handles unknown method" do
     badge = sowing_method_badge("unknown_method")
-    assert_includes badge, "badge bg-secondary"
+    assert_includes badge, "badge"
+    assert_includes badge, "background-color: #6c757d"
+    assert_includes badge, "color: #ffffff"
   end
 end
