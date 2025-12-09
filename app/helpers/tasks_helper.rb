@@ -2,13 +2,13 @@ module TasksHelper
   def task_badge_color(task)
     case task.task_type
     when "plant_seeds"
-      "success"  # Green for planting seeds
+      { bg: "#FFCBE1", text: "#000000" }  # Purple for planting seeds
     when "begin_hardening_off"
-      "blue"  # Deep blue for hardening
+      { bg: "#F9E1A8", text: "#000000" }  # Burgundy for hardening
     when "plant_seedlings"
-      "pink"  # Watermelon pink for transplanting seedlings
+      { bg: "#D6E5BD", text: "#000000" }  # Dark magenta for transplanting seedlings
     else
-      "secondary"  # Gray for other tasks
+      { bg: "#6c757d", text: "#ffffff" }  # Gray for other tasks
     end
   end
 end

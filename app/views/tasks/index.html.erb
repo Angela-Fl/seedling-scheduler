@@ -2,7 +2,7 @@
 
 <div class="alert alert-secondary" role="alert">
   <strong>Last frost date:</strong> <%= Setting.frost_date.to_fs(:long) %>
-  <%= link_to "Edit", edit_settings_path, class: "btn btn-sm btn-outline-primary ms-2" %>
+  <%= link_to "Edit", edit_settings_path, class: "btn btn-sm btn-primary ms-2" %>
 </div>
 
 <% if @tasks.any? %>
@@ -21,7 +21,7 @@
           <tr>
             <td><%= task.due_date.to_fs(:long) %></td>
             <td>
-              <span class="badge bg-<%= task_badge_color(task) %>">
+              <span class="badge" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
                 <%= task.display_name %>
               </span>
             </td>

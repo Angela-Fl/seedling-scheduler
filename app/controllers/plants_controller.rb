@@ -87,7 +87,7 @@ class PlantsController < ApplicationController
     return unless weeks.present?
 
     # Convert to days
-    days = unit == "weeks" ? weeks.to_i * 7 : weeks.to_i
+    days = unit == "weeks" ? weeks.to_i * Plant::DAYS_PER_WEEK : weeks.to_i
 
     # Apply direction (before = negative, after = positive)
     days *= -1 if direction == "before"

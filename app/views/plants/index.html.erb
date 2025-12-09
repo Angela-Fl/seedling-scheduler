@@ -24,18 +24,7 @@
             </td>
             <td><%= plant.variety %></td>
             <td>
-              <% case plant.sowing_method
-                 when "direct_sow" %>
-                <span class="badge bg-orange">Direct sow</span>
-              <% when "indoor_start" %>
-                <span class="badge bg-teal">Indoor start</span>
-              <% when "outdoor_start" %>
-                <span class="badge bg-purple">Outdoor start</span>
-              <% when "fridge_stratify" %>
-                <span class="badge bg-secondary">Fridge stratify</span>
-              <% else %>
-                <span class="text-muted">—</span>
-              <% end %>
+              <%= sowing_method_badge(plant.sowing_method) %>
             </td>
             <td class="text-end">
               <div class="btn-group" role="group">

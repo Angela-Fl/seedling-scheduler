@@ -1,4 +1,6 @@
 class Task < ApplicationRecord
+  HISTORY_DAYS = 7
+
   belongs_to :plant
 
   enum :task_type, {

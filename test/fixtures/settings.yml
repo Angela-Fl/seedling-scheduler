@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  key: MyString
-  value: MyString
+frost_date_setting:
+  key: frost_date
+  value: "2026-05-15"
 
-two:
-  key: MyString
-  value: MyString
+alternate_frost_date:
+  key: alternate_frost_date
+  value: "2026-06-01"

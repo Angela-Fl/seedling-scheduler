@@ -12,18 +12,7 @@
 
           <dt class="col-sm-3">Sowing method:</dt>
           <dd class="col-sm-9">
-            <% case @plant.sowing_method
-               when "direct_sow" %>
-              <span class="badge bg-orange">Direct sow</span>
-            <% when "indoor_start" %>
-              <span class="badge bg-purple">Indoor start</span>
-            <% when "outdoor_start" %>
-              <span class="badge bg-teal">Outdoor start</span>
-            <% when "fridge_stratify" %>
-              <span class="badge bg-secondary">Fridge stratify</span>
-            <% else %>
-              <span class="text-muted">Not specified</span>
-            <% end %>
+            <%= sowing_method_badge(@plant.sowing_method) %>
           </dd>
 
           <% if @plant.notes.present? %>

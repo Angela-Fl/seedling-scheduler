@@ -1,4 +1,6 @@
 class Plant < ApplicationRecord
+  DAYS_PER_WEEK = 7
+
   has_many :tasks, dependent: :destroy
 
   # How you start this plant
