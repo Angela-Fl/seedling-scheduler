@@ -15,14 +15,14 @@
 
 :root {
   /* Brand Colors - Gardening/Seedling Theme */
-  --bs-primary: #2d6a4f;        /* Forest green - primary actions */
-  --bs-primary-rgb: 45, 106, 79;
+  --bs-primary: #1e4d3a;        /* Dark forest green - navbar and primary actions */
+  --bs-primary-rgb: 30, 77, 58;
 
   --bs-secondary: #52b788;      /* Light green - secondary elements */
   --bs-secondary-rgb: 82, 183, 136;
 
-  --bs-success: #40916c;        /* Success green */
-  --bs-success-rgb: 64, 145, 108;
+  --bs-success: #2d6a4f;        /* Forest green */
+  --bs-success-rgb: 45, 106, 79;
 
   --bs-info: #74c69d;           /* Info light green */
   --bs-info-rgb: 116, 198, 157;
@@ -63,4 +63,58 @@
 /* Bold navbar brand */
 .navbar-brand {
   font-weight: 600;
+}
+
+/* ========================================
+   Custom Badge Colors
+   ======================================== */
+
+/* Darker watermelon pink badge */
+.badge.bg-pink {
+  background-color: #c91f5d !important;
+  color: white;
+}
+
+/* Deep blue badge (to differentiate from green) */
+.badge.bg-blue {
+  background-color: #1e4d7a !important;
+  color: white;
+}
+
+/* Sowing Method Colors */
+.badge.bg-orange {
+  background-color: #9d4a18 !important;
+  color: white;
+}
+
+.badge.bg-purple {
+  background-color: #5b21b6 !important;
+  color: white;
+}
+
+.badge.bg-teal {
+  background-color: #0a6b61 !important;
+  color: white;
+}
+
+/* ========================================
+   Navbar Improvements
+   ======================================== */
+
+/* Higher contrast for unselected navbar links */
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+/* Active/selected tab stands out more */
+.navbar-nav .nav-link.active {
+  color: white !important;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 0.25rem;
 }

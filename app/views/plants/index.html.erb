@@ -24,14 +24,15 @@
             </td>
             <td><%= plant.variety %></td>
             <td>
-              <% if plant.sowing_method == "direct_sow" %>
-                <span class="badge bg-success">Direct sow</span>
-              <% elsif plant.sowing_method == "indoor" %>
-                <span class="badge bg-info">Start indoors</span>
-              <% elsif plant.sowing_method == "winter_sow" %>
-                <span class="badge bg-primary">Winter sow</span>
-              <% elsif plant.sowing_method == "stratify_then_indoor" %>
-                <span class="badge bg-secondary">Stratify then indoor</span>
+              <% case plant.sowing_method
+                 when "direct_sow" %>
+                <span class="badge bg-orange">Direct sow</span>
+              <% when "indoor_start" %>
+                <span class="badge bg-teal">Indoor start</span>
+              <% when "outdoor_start" %>
+                <span class="badge bg-purple">Outdoor start</span>
+              <% when "fridge_stratify" %>
+                <span class="badge bg-secondary">Fridge stratify</span>
               <% else %>
                 <span class="text-muted">—</span>
               <% end %>

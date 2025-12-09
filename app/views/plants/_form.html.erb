@@ -29,30 +29,108 @@
   <div class="mb-3">
     <%= f.label :sowing_method, class: "form-label" %>
     <%= f.select :sowing_method,
-                 Plant.sowing_methods.keys.map { |m| [m.humanize, m] },
+                 Plant.sowing_methods.keys
+                      .reject { |m| m == "fridge_stratify" }  # Hide unimplemented
+                      .map { |m| [m.titleize.gsub("_", " "), m] },
                  { include_blank: "Select a method" },
                  class: "form-select" %>
-    <div class="form-text">Choose whether to start indoors or direct sow.</div>
+    <div class="form-text">Choose how you'll start your seeds.</div>
   </div>
 
-  <%# Weeks Before Frost - Start Indoors %>
-  <div class="mb-3">
-    <%= f.label :weeks_before_last_frost_to_start, "Weeks before last frost to start indoors", class: "form-label" %>
-    <%= f.number_field :weeks_before_last_frost_to_start, class: "form-control", min: 0 %>
-    <div class="form-text">Leave blank if not starting indoors.</div>
+  <%# Plant Seeds Timing %>
+    <fieldset class="mb-3">
+      <legend class="form-label">
+        Plant seeds
+      </legend>
+
+      <div class="row g-2">
+        <div class="col-md-4">
+          <%= f.label :plant_seeds_weeks, "Number of units before/after frost", class: "visually-hidden" %>
+          <%= f.number_field :plant_seeds_weeks,
+                          value: (@plant.plant_seeds_offset_days ? @plant.plant_seeds_offset_days.abs / 7 : nil),
+                          class: "form-control",
+                          placeholder: "6",
+                          min: 0 %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :plant_seeds_unit, "Unit (weeks or days)", class: "visually-hidden" %>
+          <%= f.select :plant_seeds_unit,
+                     [["weeks", "weeks"], ["days", "days"]],
+                     { selected: "weeks" },
+                     class: "form-select" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :plant_seeds_direction, "Relative to last frost (before or after)", class: "visually-hidden" %>
+          <%= f.select :plant_seeds_direction,
+                     [["before frost", "before"], ["after frost", "after"]],
+                     { selected: @plant.plant_seeds_offset_days && @plant.plant_seeds_offset_days >= 0 ? "after" : "before" },
+                     class: "form-select" %>
+        </div>
+    <div class="form-text">For indoor/outdoor start: usually before frost. For direct sow: usually after frost.</div>
   </div>
 
-  <%# Weeks Before Frost - Hardening Off %>
-  <div class="mb-3">
-    <%= f.label :weeks_before_last_frost_to_transplant, "Weeks before last frost to begin hardening off", class: "form-label" %>
-    <%= f.number_field :weeks_before_last_frost_to_transplant, class: "form-control", min: 0 %>
-    <div class="form-text">Only applies if starting indoors.</div>
+  <%# Hardening Timing %>
+    <fieldset class="mb-3">
+      <legend class="form-label">
+        Begin hardening off
+      </legend>
+      
+      <div class="row g-2">
+        <div class="col-md-4">
+          <%= f.label :hardening_weeks, "Number of units before/after frost", class: "visually-hidden" %>
+          <%= f.number_field :hardening_weeks,
+                          value: (@plant.hardening_offset_days ? @plant.hardening_offset_days.abs / 7 : nil),
+                          class: "form-control",
+                          placeholder: "2",
+                          min: 0 %>
+       </div>
+       <div class="col-md-4">
+         <%= f.label :hardening_unit, "Unit (weeks or days)", class: "visually-hidden" %>
+         <%= f.select :hardening_unit,
+                     [["weeks", "weeks"], ["days", "days"]],
+                     { selected: "weeks" },
+                     class: "form-select" %>
+         </div>
+         <div class="col-md-4">
+           <%= f.label :hardening_direction, "Relative to last frost (before or after)", class: "visually-hidden" %>
+           <%= f.select :hardening_direction,
+                     [["before frost", "before"], ["after frost", "after"]],
+                     { selected: "before" },
+                     class: "form-select" %>
+        </div>
+    <div class="form-text">Only needed for indoor start.</div>
   </div>
 
-  <%# Weeks After Frost - Plant %>
-  <div class="mb-3">
-    <%= f.label :weeks_after_last_frost_to_plant, "Weeks after last frost to plant", class: "form-label" %>
-    <%= f.number_field :weeks_after_last_frost_to_plant, class: "form-control", min: 0 %>
+  <%# Plant Seedlings Timing %>
+    <fieldset class="mb-3">
+      <legend class="form-label">
+        Transplant seedlings
+      </legend>
+
+      <div class="row g-2">
+        <div class="col-md-4">
+          <%= f.label :plant_seedlings_weeks, "Number of units before/after frost", class: "visually-hidden" %>
+          <%= f.number_field :plant_seedlings_weeks,
+                          value: (@plant.plant_seedlings_offset_days ? @plant.plant_seedlings_offset_days.abs / 7 : nil),
+                          class: "form-control",
+                          placeholder: "2",
+                          min: 0 %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :plant_seedlings_unit, "Unit (weeks or days)", class: "visually-hidden" %>
+          <%= f.select :plant_seedlings_unit,
+                     [["weeks", "weeks"], ["days", "days"]],
+                     { selected: "weeks" },
+                     class: "form-select" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :plant_seedlings_direction, "Relative to last frost (before or after)", class: "visually-hidden" %>
+          <%= f.select :plant_seedlings_direction,
+                     [["before frost", "before"], ["after frost", "after"]],
+                     { selected: "after" },
+                     class: "form-select" %>
+      </div>
+    <div class="form-text">Not needed for direct sow.</div>
   </div>
 
   <%# Notes Textarea %>

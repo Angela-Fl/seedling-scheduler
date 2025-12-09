@@ -3,73 +3,68 @@ class Plant < ApplicationRecord
 
   # How you start this plant
   enum :sowing_method, {
-    indoor: "indoor",
+    indoor_start: "indoor_start",
     direct_sow: "direct_sow",
-    winter_sow: "winter_sow",
-    stratify_then_indoor: "stratify_then_indoor"
+    outdoor_start: "outdoor_start",
+    fridge_stratify: "fridge_stratify"  # Hidden from UI, placeholder for future
   }, prefix: true
 
   # Validations
   validates :name, presence: true
   validates :sowing_method, presence: true
-  validates :weeks_before_last_frost_to_start,
-            numericality: { only_integer: true, greater_than_or_equal_to: 0 },
-            allow_nil: true
-  validates :weeks_before_last_frost_to_transplant,
-            numericality: { only_integer: true, greater_than_or_equal_to: 0 },
-            allow_nil: true
-  validates :weeks_after_last_frost_to_plant,
-            numericality: { only_integer: true, greater_than_or_equal_to: 0 },
-            allow_nil: true
+  validates :plant_seeds_offset_days, numericality: { only_integer: true }, allow_nil: true
+  validates :hardening_offset_days, numericality: { only_integer: true }, allow_nil: true
+  validates :plant_seedlings_offset_days, numericality: { only_integer: true }, allow_nil: true
 
-  # Indoor plants should have start weeks defined
-  validate :indoor_plants_have_start_weeks, if: -> { sowing_method.in?(%w[indoor stratify_then_indoor winter_sow]) }
-
-  # All plants should have weeks_after_last_frost_to_plant defined
-  validate :plants_have_plant_weeks
+  validate :all_plants_must_have_plant_seeds_offset
+  validate :transplanting_methods_need_plant_seedlings_offset
 
   def generate_tasks!(last_frost_date)
+    # Clear existing tasks
     tasks.destroy_all
 
-    # START indoors or winter sowing (for indoor/stratify/winter_sow methods)
-    if weeks_before_last_frost_to_start.present?
+    # PLANT_SEEDS task: Universal first task for all sowing methods
+    if plant_seeds_offset_days.present?
       tasks.create!(
-        task_type: "start",
-        due_date: last_frost_date - weeks_before_last_frost_to_start.weeks,
-        status: "pending"
+        task_type: :plant_seeds,
+        due_date: last_frost_date + plant_seeds_offset_days.days,
+        notes: sowing_method_direct_sow? ? "Plant #{name} seeds outdoors" : "Sow seeds for #{name} (#{variety})",
+        status: :pending
       )
     end
 
-    # HARDEN OFF (for seedlings before planting out)
-    if weeks_before_last_frost_to_transplant.present? && sowing_method.in?(%w[indoor stratify_then_indoor])
+    # BEGIN_HARDENING_OFF task: only for indoor_start
+    if sowing_method_indoor_start? && hardening_offset_days.present?
       tasks.create!(
-        task_type: "harden_off",
-        due_date: last_frost_date - weeks_before_last_frost_to_transplant.weeks,
-        status: "pending"
+        task_type: :begin_hardening_off,
+        due_date: last_frost_date + hardening_offset_days.days,
+        notes: "Begin hardening off #{name} seedlings",
+        status: :pending
       )
     end
 
-    # PLANT - unified task (seeds or seedlings depending on sowing_method)
-    if weeks_after_last_frost_to_plant.present?
+    # PLANT_SEEDLINGS task: for indoor_start and outdoor_start (not direct_sow)
+    if !sowing_method_direct_sow? && plant_seedlings_offset_days.present?
       tasks.create!(
-        task_type: "plant",
-        due_date: last_frost_date + weeks_after_last_frost_to_plant.weeks,
-        status: "pending"
+        task_type: :plant_seedlings,
+        due_date: last_frost_date + plant_seedlings_offset_days.days,
+        notes: "Transplant #{name} seedlings",
+        status: :pending
       )
     end
   end
 
   private
 
-  def indoor_plants_have_start_weeks
-    if weeks_before_last_frost_to_start.blank?
-      errors.add(:weeks_before_last_frost_to_start, "is required for this sowing method")
+  def all_plants_must_have_plant_seeds_offset
+    if plant_seeds_offset_days.blank?
+      errors.add(:base, "Please fill out the 'Plant seeds' field")
     end
   end
 
-  def plants_have_plant_weeks
-    if weeks_after_last_frost_to_plant.blank?
-      errors.add(:weeks_after_last_frost_to_plant, "is required for all plants")
+  def transplanting_methods_need_plant_seedlings_offset
+    if !sowing_method_direct_sow? && plant_seedlings_offset_days.blank?
+      errors.add(:base, "Please fill out the 'Transplant seedlings' field for this sowing method")
     end
   end
 end

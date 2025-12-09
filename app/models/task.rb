@@ -2,9 +2,10 @@ class Task < ApplicationRecord
   belongs_to :plant
 
   enum :task_type, {
-    start: "start",
-    harden_off: "harden_off",
-    plant: "plant"
+    plant_seeds: "plant_seeds",
+    begin_hardening_off: "begin_hardening_off",
+    plant_seedlings: "plant_seedlings",
+    begin_stratification: "begin_stratification"  # Not used yet, placeholder
   }, prefix: :task
 
   enum :status, {
@@ -18,28 +19,19 @@ class Task < ApplicationRecord
   validates :task_type, presence: true
   validates :status, presence: true
 
-  # Returns human-friendly label based on task type and plant's sowing method
+  # Returns human-friendly label based on task type
   def display_name
     case task_type
-    when "start"
-      "Start seeds"
-    when "harden_off"
+    when "plant_seeds"
+      "Plant seeds"
+    when "begin_hardening_off"
       "Begin hardening off"
-    when "plant"
-      case plant.sowing_method
-      when "indoor"
-        "Plant seedlings"
-      when "direct_sow"
-        "Plant seeds"
-      when "winter_sow"
-        "Plant out winter-sown seedlings"
-      when "stratify_then_indoor"
-        "Plant seedlings"
-      else
-        "Plant"
-      end
+    when "plant_seedlings"
+      "Plant seedlings"
+    when "begin_stratification"
+      "Begin fridge stratification"
     else
-      task_type&.humanize || "Unknown"
+      task_type.humanize
     end
   end
 

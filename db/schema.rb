@@ -10,17 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_07_003802) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_08_190226) do
   create_table "plants", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.integer "hardening_offset_days"
     t.string "name"
     t.text "notes"
+    t.integer "plant_seedlings_offset_days"
+    t.integer "plant_seeds_offset_days"
     t.string "sowing_method"
     t.datetime "updated_at", null: false
     t.string "variety"
-    t.integer "weeks_after_last_frost_to_plant"
-    t.integer "weeks_before_last_frost_to_start"
-    t.integer "weeks_before_last_frost_to_transplant"
   end
 
   create_table "settings", force: :cascade do |t|

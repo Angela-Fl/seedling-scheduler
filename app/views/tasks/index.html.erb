@@ -21,15 +21,9 @@
           <tr>
             <td><%= task.due_date.to_fs(:long) %></td>
             <td>
-              <% if task.task_type == "plant" %>
-                <% if task.plant.sowing_method == "direct_sow" %>
-                  <span class="badge bg-success">Plant seeds</span>
-                <% else %>
-                  <span class="badge bg-info">Plant seedlings</span>
-                <% end %>
-              <% else %>
-                <span class="badge bg-secondary"><%= task.task_type.humanize %></span>
-              <% end %>
+              <span class="badge bg-<%= task_badge_color(task) %>">
+                <%= task.display_name %>
+              </span>
             </td>
             <td>
               <strong><%= task.plant.name %></strong><br>

@@ -1,33 +1,33 @@
 zinnia:
   name: Zinnia
   variety: Mixed
-  sowing_method: indoor
-  weeks_before_last_frost_to_start: 6
-  weeks_before_last_frost_to_transplant: 1
-  weeks_after_last_frost_to_plant: 1
+  sowing_method: indoor_start
+  plant_seeds_offset_days: -42
+  hardening_offset_days: -7
+  plant_seedlings_offset_days: 7
   notes: Needs warmth, hates frost.
 
 sunflower:
   name: Sunflower
   variety: Autumn Beauty
   sowing_method: direct_sow
-  weeks_after_last_frost_to_plant: 1
+  plant_seeds_offset_days: 7
   notes: Direct sow once soil is warming.
 
 snapdragon:
   name: Snapdragon
   variety: Tall mix
-  sowing_method: indoor
-  weeks_before_last_frost_to_start: 10
-  weeks_before_last_frost_to_transplant: 1
-  weeks_after_last_frost_to_plant: 1
+  sowing_method: indoor_start
+  plant_seeds_offset_days: -70
+  hardening_offset_days: -7
+  plant_seedlings_offset_days: 7
   notes: Cool tolerant.
 
 milkweed:
   name: Milkweed
   variety: Common
-  sowing_method: stratify_then_indoor
-  weeks_before_last_frost_to_start: 8
-  weeks_before_last_frost_to_transplant: 2
-  weeks_after_last_frost_to_plant: 2
+  sowing_method: fridge_stratify
+  plant_seeds_offset_days: -56
+  hardening_offset_days: -14
+  plant_seedlings_offset_days: 14
   notes: Needs cold stratification.

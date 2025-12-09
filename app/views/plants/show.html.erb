@@ -12,14 +12,15 @@
 
           <dt class="col-sm-3">Sowing method:</dt>
           <dd class="col-sm-9">
-            <% if @plant.sowing_method == "direct_sow" %>
-              <span class="badge bg-success">Direct sow</span>
-            <% elsif @plant.sowing_method == "indoor" %>
-              <span class="badge bg-info">Start indoors</span>
-            <% elsif @plant.sowing_method == "winter_sow" %>
-              <span class="badge bg-primary">Winter sow</span>
-            <% elsif @plant.sowing_method == "stratify_then_indoor" %>
-              <span class="badge bg-secondary">Stratify then indoor</span>
+            <% case @plant.sowing_method
+               when "direct_sow" %>
+              <span class="badge bg-orange">Direct sow</span>
+            <% when "indoor_start" %>
+              <span class="badge bg-purple">Indoor start</span>
+            <% when "outdoor_start" %>
+              <span class="badge bg-teal">Outdoor start</span>
+            <% when "fridge_stratify" %>
+              <span class="badge bg-secondary">Fridge stratify</span>
             <% else %>
               <span class="text-muted">Not specified</span>
             <% end %>
@@ -40,29 +41,29 @@
       </div>
       <div class="card-body">
         <ul class="list-group list-group-flush">
-          <% if @plant.weeks_before_last_frost_to_start.present? %>
+          <% if @plant.plant_seeds_offset_days.present? %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span><strong>Start indoors:</strong></span>
+              <span><strong>Plant seeds:</strong></span>
               <span class="badge bg-primary rounded-pill">
-                <%= @plant.weeks_before_last_frost_to_start %> weeks before frost
+                <%= format_offset(@plant.plant_seeds_offset_days) %>
               </span>
             </li>
           <% end %>
 
-          <% if @plant.weeks_before_last_frost_to_transplant.present? %>
+          <% if @plant.hardening_offset_days.present? %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span><strong>Harden off:</strong></span>
+              <span><strong>Begin hardening off:</strong></span>
               <span class="badge bg-info rounded-pill">
-                <%= @plant.weeks_before_last_frost_to_transplant %> weeks before frost
+                <%= format_offset(@plant.hardening_offset_days) %>
               </span>
             </li>
           <% end %>
 
-          <% if @plant.weeks_after_last_frost_to_plant.present? %>
+          <% if @plant.plant_seedlings_offset_days.present? %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span><strong>Plant:</strong></span>
+              <span><strong>Transplant seedlings:</strong></span>
               <span class="badge bg-success rounded-pill">
-                <%= @plant.weeks_after_last_frost_to_plant %> weeks after frost
+                <%= format_offset(@plant.plant_seedlings_offset_days) %>
               </span>
             </li>
           <% end %>
