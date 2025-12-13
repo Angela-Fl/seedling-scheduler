@@ -9,5 +9,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tasks, only: [ :index ]
+  resources :tasks, only: [ :index, :create, :update ] do
+    collection do
+      get :calendar
+    end
+  end
 end

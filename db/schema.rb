@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_08_190226) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_13_024759) do
   create_table "plants", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "hardening_offset_days"
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_08_190226) do
     t.datetime "created_at", null: false
     t.date "due_date"
     t.text "notes"
-    t.integer "plant_id", null: false
+    t.integer "plant_id"
     t.string "status"
     t.string "task_type"
     t.datetime "updated_at", null: false

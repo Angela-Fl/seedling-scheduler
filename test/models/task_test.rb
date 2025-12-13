@@ -45,14 +45,13 @@ class TaskTest < ActiveSupport::TestCase
     assert_includes task.errors[:status], "can't be blank"
   end
 
-  test "requires plant" do
+  test "plant is optional" do
     task = Task.new(
       task_type: "plant_seeds",
       due_date: Date.today,
       status: "pending"
     )
-    assert_not task.valid?
-    assert_includes task.errors[:plant], "must exist"
+    assert task.valid?
   end
 
   # ===================
@@ -150,5 +149,35 @@ class TaskTest < ActiveSupport::TestCase
   test "can query by task_type" do
     plant_seeds_tasks = Task.where(task_type: "plant_seeds")
     assert plant_seeds_tasks.count > 0
+  end
+
+  # ===================
+  # Optional plant tests
+  # ===================
+
+  test "task can be created without a plant" do
+    task = Task.create!(
+      task_type: "plant_seeds",
+      due_date: Date.today,
+      status: "pending",
+      notes: "General gardening task"
+    )
+    assert_nil task.plant
+    assert task.valid?
+  end
+
+  test "display_subject shows only task name when plant is nil" do
+    task = Task.new(
+      task_type: "plant_seeds",
+      due_date: Date.today,
+      status: "pending"
+    )
+    assert_equal "Plant seeds", task.display_subject
+  end
+
+  test "display_subject includes plant name when plant is present" do
+    task = tasks(:zinnia_start)
+    assert task.display_subject.include?("Zinnia")
+    assert task.display_subject.include?("Plant seeds")
   end
 end

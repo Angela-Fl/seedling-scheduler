@@ -93,4 +93,139 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     # Verify we can see plant names (tests eager loading implicitly)
     assert_select "td", text: /Zinnia/
   end
+
+  # ===================
+  # Calendar view tests
+  # ===================
+
+  test "should get calendar view" do
+    get calendar_tasks_url
+    assert_response :success
+    assert_select "h1", text: "Task Calendar"
+  end
+
+  test "calendar view shows last frost date" do
+    get calendar_tasks_url
+    assert_response :success
+    assert_select ".alert", text: /Last frost date/
+  end
+
+  # ===================
+  # JSON API tests
+  # ===================
+
+  test "index returns JSON with tasks" do
+    get tasks_url(format: :json)
+    assert_response :success
+
+    json_response = JSON.parse(response.body)
+    assert json_response.is_a?(Array)
+    assert json_response.length > 0
+
+    # Verify structure of first task
+    task = json_response.first
+    assert task.key?("id")
+    assert task.key?("due_date")
+    assert task.key?("task_type")
+    assert task.key?("status")
+    assert task.key?("plant_name")
+  end
+
+  test "index JSON filters by date range" do
+    plant = plants(:zinnia)
+    start_date = Date.current
+    end_date = Date.current + 7.days
+
+    # Create tasks outside the range
+    plant.tasks.create!(
+      task_type: "plant_seeds",
+      due_date: start_date - 10.days,
+      status: "pending"
+    )
+    plant.tasks.create!(
+      task_type: "plant_seeds",
+      due_date: end_date + 10.days,
+      status: "pending"
+    )
+
+    # Create task inside the range
+    in_range_task = plant.tasks.create!(
+      task_type: "plant_seeds",
+      due_date: start_date + 3.days,
+      status: "pending"
+    )
+
+    get tasks_url(format: :json, start: start_date.iso8601, end: end_date.iso8601)
+    assert_response :success
+
+    json_response = JSON.parse(response.body)
+    task_ids = json_response.map { |t| t["id"] }
+
+    # Only the in-range task should be returned
+    assert_includes task_ids, in_range_task.id
+  end
+
+  test "create task via JSON API" do
+    plant = plants(:zinnia)
+    assert_difference("Task.count", 1) do
+      post tasks_url(format: :json), params: {
+        task: {
+          plant_id: plant.id,
+          task_type: "plant_seeds",
+          due_date: Date.today,
+          status: "pending",
+          notes: "Test task"
+        }
+      }
+    end
+
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    assert_equal "plant_seeds", json_response["task_type"]
+    assert_equal "Test task", json_response["notes"]
+  end
+
+  test "create task without plant via JSON API" do
+    assert_difference("Task.count", 1) do
+      post tasks_url(format: :json), params: {
+        task: {
+          task_type: "plant_seeds",
+          due_date: Date.today,
+          status: "pending",
+          notes: "General task"
+        }
+      }
+    end
+
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    assert_nil json_response["plant_id"]
+    assert_nil json_response["plant_name"]
+  end
+
+  test "update task via JSON API" do
+    task = tasks(:zinnia_start)
+    patch task_url(task, format: :json), params: {
+      task: {
+        status: "done",
+        notes: "Updated notes"
+      }
+    }
+
+    assert_response :success
+    json_response = JSON.parse(response.body)
+    assert_equal "done", json_response["status"]
+    assert_equal "Updated notes", json_response["notes"]
+  end
+
+  test "update task with invalid data returns error" do
+    task = tasks(:zinnia_start)
+    patch task_url(task, format: :json), params: {
+      task: {
+        due_date: nil  # due_date is required
+      }
+    }
+
+    assert_response :unprocessable_entity
+  end
 end

@@ -1,0 +1,24 @@
+{
+  "name": "seedling-scheduler",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/multimonth": "^6.1.15",
+    "@fullcalendar/bootstrap5": "^6.1.15",
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.10",
+    "bootstrap": "^5.3.3",
+    "@popperjs/core": "^2.11.8"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21",
+    "vite-plugin-ruby": "^5.1.1"
+  }
+}

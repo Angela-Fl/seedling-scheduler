@@ -162,18 +162,20 @@ end
 
 **Relationships**:
 ```ruby
-belongs_to :plant
+belongs_to :plant, optional: true
 ```
 
 **Key Attributes**:
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `plant_id` | integer | Foreign key to plants table |
-| `task_type` | enum | Type of task (start, harden_off, plant) |
+| `plant_id` | integer | Foreign key to plants table (optional) |
+| `task_type` | enum | Type of task (plant_seeds, begin_hardening_off, plant_seedlings) |
 | `due_date` | date | When the task is due |
 | `status` | enum | Current status (pending, done, skipped) |
 | `notes` | text | Optional task-specific notes |
+
+**Note**: Tasks can now exist without a plant association, allowing for general gardening tasks that aren't tied to specific plants.
 
 **Enums**:
 ```ruby
@@ -423,6 +425,134 @@ if weeks_before_last_frost_to_transplant.present() &&
 end
 ```
 
+### Feature 6: Calendar View
+
+**URL**: `/tasks/calendar`
+
+**Description**: Interactive calendar interface powered by FullCalendar that visualizes all gardening tasks.
+
+**Features**:
+- **Visual Task Display**: All tasks appear as events on a calendar grid
+- **Drag-and-Drop Rescheduling**: Click and drag tasks to new dates
+- **Task Creation**: Click on any date to create a new task
+- **Task Editing**: Click existing tasks to view and edit details
+- **Multiple Calendar Views**: Month, week, and day views available
+- **Color-Coded Events**: Tasks color-coded by status (pending, done, skipped)
+- **Date Range Filtering**: Calendar automatically fetches tasks for the visible date range
+
+**Technology**:
+- FullCalendar library with Bootstrap 5 theme
+- Stimulus controller (`calendar_controller.js`) for initialization and event handling
+- JSON API endpoints for data loading and updates
+
+**User Journey**:
+1. Navigate to Tasks → Task Calendar
+2. View tasks laid out across calendar dates
+3. Interact with tasks:
+   - Drag to reschedule
+   - Click to edit
+   - Create new tasks on specific dates
+4. Switch between calendar and table views using view toggles
+
+### Feature 7: JSON API
+
+**Description**: RESTful JSON API for programmatic access to tasks.
+
+**Endpoints**:
+
+#### GET /tasks.json
+Retrieve all tasks as JSON.
+
+**Query Parameters**:
+- `start` (ISO 8601 date): Filter tasks starting from this date
+- `end` (ISO 8601 date): Filter tasks ending at this date
+
+**Response**:
+```json
+[
+  {
+    "id": 1,
+    "due_date": "2026-05-15",
+    "task_type": "plant_seeds",
+    "status": "pending",
+    "notes": "Start indoors",
+    "plant_id": 1,
+    "plant_name": "Tomato",
+    "plant_variety": "Cherokee Purple"
+  }
+]
+```
+
+#### POST /tasks.json
+Create a new task.
+
+**Request Body**:
+```json
+{
+  "task": {
+    "plant_id": 1,          // Optional
+    "task_type": "plant_seeds",
+    "due_date": "2026-05-15",
+    "status": "pending",
+    "notes": "Optional notes"
+  }
+}
+```
+
+**Response**: 201 Created with task JSON
+
+#### PATCH /tasks/:id.json
+Update an existing task.
+
+**Request Body**:
+```json
+{
+  "task": {
+    "status": "done",
+    "notes": "Updated notes"
+  }
+}
+```
+
+**Response**: 200 OK with updated task JSON
+
+**Use Cases**:
+- Calendar integration (FullCalendar fetches tasks via JSON)
+- Mobile app development
+- Task automation scripts
+- Third-party integrations
+- Export/backup tools
+
+### Feature 8: General Tasks
+
+**Description**: Tasks can now be created without associating them to a specific plant.
+
+**Use Cases**:
+- General garden maintenance (e.g., "Clean greenhouse")
+- Seasonal activities (e.g., "Order seeds")
+- Infrastructure tasks (e.g., "Repair irrigation")
+- Reminders not plant-specific (e.g., "Fertilize all beds")
+
+**Implementation**:
+```ruby
+# Task model allows optional plant association
+belongs_to :plant, optional: true
+
+# Display logic handles nil plants
+def display_subject
+  if plant
+    "#{plant.name} - #{display_name}"
+  else
+    display_name  # Just task type for general tasks
+  end
+end
+```
+
+**Creating General Tasks**:
+- Use the calendar view to create tasks on specific dates
+- Use the JSON API with `plant_id` omitted
+- Tasks without plants display task type only
+
 ---
 
 ## Application Structure
@@ -432,10 +562,15 @@ end
 **File**: `app/controllers/`
 
 #### TasksController (`tasks_controller.rb`)
-- **index**: Shows task dashboard
+- **index**: Shows task dashboard or returns JSON
   - Eager loads plants to avoid N+1 queries
   - Filters to past 7 days onward
   - Orders by due date
+  - Responds to HTML and JSON formats
+  - JSON format supports date range filtering
+- **calendar**: Renders calendar view
+- **create**: Creates new tasks via JSON API
+- **update**: Updates tasks via JSON API
 
 #### PlantsController (`plants_controller.rb`)
 - **index**: Lists all plants alphabetically
@@ -472,12 +607,20 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tasks, only: [:index]  # Read-only
+  resources :tasks, only: [:index, :create, :update] do
+    collection do
+      get :calendar  # Calendar view
+    end
+  end
 end
 ```
 
 **Key Routes**:
 - `GET /` → tasks#index (dashboard)
+- `GET /tasks` → tasks#index (supports JSON)
+- `GET /tasks/calendar` → tasks#calendar (calendar view)
+- `POST /tasks` → tasks#create (JSON API)
+- `PATCH /tasks/:id` → tasks#update (JSON API)
 - `GET /plants` → plants#index
 - `GET /plants/:id` → plants#show
 - `GET /plants/new` → plants#new
@@ -500,10 +643,23 @@ end
 - PWA-ready (manifest commented out)
 
 #### tasks/index.html.erb
-- Task dashboard
+- Task dashboard (table view)
 - Displays frost date
 - Table of tasks with plant information
 - Conditionally shows task type labels
+- View switcher to toggle to calendar view
+
+#### tasks/calendar.html.erb
+- Calendar view of tasks
+- FullCalendar integration
+- Interactive task management
+- Date picker for frost date
+- View switcher to toggle to table view
+
+#### tasks/_task_modal.html.erb
+- Modal dialog for creating/editing tasks
+- Used by calendar view
+- Bootstrap modal component
 
 #### plants/
 - `index.html.erb` - Plant list
@@ -551,10 +707,11 @@ end
 - SQLite 3
 
 **Frontend**:
+- Vite (modern build tool and dev server)
 - Turbo (SPA-like experience)
 - Stimulus (JavaScript framework)
-- Importmap (ES modules)
-- Propshaft (asset pipeline)
+- Bootstrap 5.3 (UI framework)
+- FullCalendar (interactive calendar widget)
 
 **Infrastructure**:
 - Puma (web server)

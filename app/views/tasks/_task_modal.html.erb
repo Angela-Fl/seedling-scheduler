@@ -1,0 +1,73 @@
+<div class="modal fade" id="taskModal" tabindex="-1" data-controller="task-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Garden Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <%= form_with model: Task.new,
+                    id: "taskForm",
+                    data: {
+                      task_modal_target: "form",
+                      action: "submit->task-modal#submit"
+                    } do |f| %>
+        <div class="modal-body">
+          <div class="mb-3">
+            <%= f.label :due_date, "Due Date", class: "form-label" %>
+            <%= f.date_field :due_date,
+                            class: "form-control",
+                            required: true,
+                            data: { task_modal_target: "dateInput" } %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :plant_id, "Plant (optional)", class: "form-label" %>
+            <%= f.collection_select :plant_id,
+                                   Plant.order(:name),
+                                   :id,
+                                   ->(plant) { "#{plant.name}#{plant.variety ? " (#{plant.variety})" : ''}" },
+                                   { prompt: "General garden task (no plant)" },
+                                   class: "form-select",
+                                   data: { task_modal_target: "plantSelect" } %>
+            <div class="form-text">Leave blank for general garden tasks</div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :task_type, "Task Type", class: "form-label" %>
+            <%= f.select :task_type,
+                        options_for_select(Task.task_types.keys.map { |k| [k.humanize.titleize, k] }),
+                        { prompt: "Select task type" },
+                        class: "form-select",
+                        required: true,
+                        data: { task_modal_target: "taskTypeSelect" } %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :notes, "Notes", class: "form-label" %>
+            <%= f.text_area :notes,
+                           rows: 3,
+                           class: "form-control",
+                           placeholder: "Optional notes about this task",
+                           data: { task_modal_target: "notesInput" } %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :status, "Status", class: "form-label" %>
+            <%= f.select :status,
+                        options_for_select(Task.statuses.keys.map { |k| [k.humanize.titleize, k] }, "pending"),
+                        {},
+                        class: "form-select",
+                        required: true,
+                        data: { task_modal_target: "statusSelect" } %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <%= f.submit "Save Task", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

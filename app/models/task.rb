@@ -1,7 +1,7 @@
 class Task < ApplicationRecord
   HISTORY_DAYS = 7
 
-  belongs_to :plant
+  belongs_to :plant, optional: true
 
   enum :task_type, {
     plant_seeds: "plant_seeds",
@@ -43,5 +43,14 @@ class Task < ApplicationRecord
 
   def skip!
     update!(status: "skipped")
+  end
+
+  # Returns task description with plant name if available
+  def display_subject
+    if plant
+      "#{plant.name}#{plant.variety ? " (#{plant.variety})" : ''} - #{display_name}"
+    else
+      display_name  # Just task type for general tasks
+    end
   end
 end

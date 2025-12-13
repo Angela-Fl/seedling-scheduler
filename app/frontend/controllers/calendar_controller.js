@@ -1,0 +1,162 @@
+import { Controller } from "@hotwired/stimulus"
+import { Calendar } from '@fullcalendar/core'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import multiMonthPlugin from '@fullcalendar/multimonth'
+import interactionPlugin from '@fullcalendar/interaction'
+import bootstrap5Plugin from '@fullcalendar/bootstrap5'
+import { getTaskColor, getTaskDisplayName } from '../lib/task_colors'
+
+export default class extends Controller {
+  static values = {
+    tasksUrl: String
+  }
+  static targets = ["calendar"]
+
+  connect() {
+    this.calendar = new Calendar(this.calendarTarget, {
+      plugins: [dayGridPlugin, multiMonthPlugin, interactionPlugin, bootstrap5Plugin],
+      themeSystem: 'bootstrap5',
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,multiMonthYear'
+      },
+      height: 'auto',
+      editable: true,
+      selectable: true,
+      dateClick: this.handleDateClick.bind(this),
+      eventClick: this.handleEventClick.bind(this),
+      eventDrop: this.handleEventDrop.bind(this),
+      eventDidMount: this.handleEventDidMount.bind(this),
+      datesSet: this.handleDatesSet.bind(this)
+    })
+
+    this.calendar.render()
+    this.loadTasks()
+
+    // Listen for reload events
+    window.addEventListener('calendar:reload', () => this.loadTasks())
+  }
+
+  disconnect() {
+    if (this.calendar) this.calendar.destroy()
+  }
+
+  async loadTasks(start = null, end = null) {
+    if (!start || !end) {
+      const now = new Date()
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      end = new Date(now.getFullYear(), now.getMonth() + 5, 0)
+    }
+
+    const url = new URL(this.tasksUrlValue, window.location.origin)
+    url.searchParams.set('start', start.toISOString().split('T')[0])
+    url.searchParams.set('end', end.toISOString().split('T')[0])
+
+    try {
+      const response = await fetch(url)
+      const tasks = await response.json()
+
+      this.calendar.removeAllEvents()
+      tasks.forEach(task => this.calendar.addEvent(this.formatEvent(task)))
+    } catch (error) {
+      console.error('Failed to load tasks:', error)
+    }
+  }
+
+  formatEvent(task) {
+    const colors = getTaskColor(task.task_type)
+
+    // Build title: show plant name if present, otherwise just task type
+    let title = getTaskDisplayName(task.task_type)
+    if (task.plant_name) {
+      title = `${title}: ${task.plant_name}`
+    }
+
+    return {
+      id: task.id,
+      title: title,
+      start: task.due_date,
+      allDay: true,
+      backgroundColor: colors.bg,
+      borderColor: colors.bg,
+      textColor: colors.text,
+      extendedProps: {
+        taskType: task.task_type,
+        plantName: task.plant_name,
+        plantVariety: task.plant_variety,
+        notes: task.notes,
+        status: task.status,
+        plantId: task.plant_id,
+        dueDate: task.due_date
+      }
+    }
+  }
+
+  handleDateClick(info) {
+    window.dispatchEvent(new CustomEvent('calendar:create', {
+      detail: { date: info.dateStr }
+    }))
+  }
+
+  handleEventClick(info) {
+    window.dispatchEvent(new CustomEvent('calendar:edit', {
+      detail: {
+        id: info.event.id,
+        ...info.event.extendedProps
+      }
+    }))
+  }
+
+  async handleEventDrop(info) {
+    try {
+      const response = await fetch(`/tasks/${info.event.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ task: { due_date: info.event.startStr } })
+      })
+
+      if (!response.ok) throw new Error('Update failed')
+      this.showNotification('Task rescheduled', 'success')
+    } catch (error) {
+      info.revert()
+      this.showNotification('Failed to reschedule', 'danger')
+    }
+  }
+
+  handleEventDidMount(info) {
+    const { plantName, plantVariety, notes, status } = info.event.extendedProps
+
+    // Build tooltip content
+    let content = ''
+    if (plantName) {
+      content += `<strong>${plantName}</strong> ${plantVariety ? `(${plantVariety})` : ''}<br>`
+    } else {
+      content += `<strong>General Garden Task</strong><br>`
+    }
+    if (notes) {
+      content += `<small>${notes}</small><br>`
+    }
+    content += `<span class="badge bg-${status === 'done' ? 'success' : 'warning'}">${status}</span>`
+
+    new window.bootstrap.Tooltip(info.el, {
+      title: content,
+      html: true,
+      placement: 'top'
+    })
+  }
+
+  handleDatesSet(info) {
+    this.loadTasks(info.start, info.end)
+  }
+
+  showNotification(message, type) {
+    window.dispatchEvent(new CustomEvent('notification:show', {
+      detail: { message, type }
+    }))
+  }
+}

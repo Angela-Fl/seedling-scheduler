@@ -36,6 +36,10 @@
 !/app/assets/builds/.keep
 /public/assets
 
+# Ignore Vite build artifacts and cache
+/.vite
+/public/vite*
+
 # Ignore CI service files.
 /.github
 

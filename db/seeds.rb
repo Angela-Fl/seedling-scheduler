@@ -1,8 +1,3 @@
-# Clear existing data
-Task.destroy_all
-Plant.destroy_all
-Setting.destroy_all
-
 # Set up frost date
 Setting.set_frost_date(Date.new(2026, 5, 15))
 

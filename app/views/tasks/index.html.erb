@@ -1,4 +1,10 @@
-<h1 class="mb-4">Upcoming Seedling Tasks</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Upcoming Seedling Tasks</h1>
+  <div class="btn-group">
+    <%= link_to "Table", tasks_path, class: "btn btn-primary active" %>
+    <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-outline-primary" %>
+  </div>
+</div>
 
 <div class="alert alert-secondary" role="alert">
   <strong>Last frost date:</strong> <%= Setting.frost_date.to_fs(:long) %>
@@ -26,10 +32,14 @@
               </span>
             </td>
             <td>
-              <strong><%= task.plant.name %></strong><br>
-              <small class="text-muted"><%= task.plant.variety %></small>
+              <% if task.plant %>
+                <strong><%= task.plant.name %></strong><br>
+                <small class="text-muted"><%= task.plant.variety %></small>
+              <% else %>
+                <em class="text-muted">General garden task</em>
+              <% end %>
             </td>
-            <td><%= task.notes.presence || task.plant.notes %></td>
+            <td><%= task.notes.presence || task.plant&.notes %></td>
           </tr>
         <% end %>
       </tbody>

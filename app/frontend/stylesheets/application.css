@@ -1,0 +1,153 @@
+/* Bootstrap CSS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* FullCalendar CSS is included in the JS modules themselves (v6+) */
+
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+/* ========================================
+   Bootstrap Theme Customization
+   ======================================== */
+
+:root {
+  /* Brand Colors - Gardening/Seedling Theme */
+  --bs-primary: #1e4d3a;        /* Dark forest green - navbar and primary actions */
+  --bs-primary-rgb: 30, 77, 58;
+
+  --bs-secondary: #52b788;      /* Light green - secondary elements */
+  --bs-secondary-rgb: 82, 183, 136;
+
+  --bs-success: #2d6a4f;        /* Forest green */
+  --bs-success-rgb: 45, 106, 79;
+
+  --bs-info: #74c69d;           /* Info light green */
+  --bs-info-rgb: 116, 198, 157;
+
+  --bs-warning: #f4a261;        /* Warning orange */
+  --bs-warning-rgb: 244, 162, 97;
+
+  --bs-danger: #e76f51;         /* Danger red */
+  --bs-danger-rgb: 231, 111, 81;
+
+  /* Spacing */
+  --bs-spacer: 1rem;
+
+  /* Border radius - softer corners */
+  --bs-border-radius: 0.5rem;
+  --bs-border-radius-sm: 0.375rem;
+  --bs-border-radius-lg: 0.75rem;
+
+  /* Font family */
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ========================================
+   Custom Component Overrides
+   ======================================== */
+
+/* Ensure good contrast for buttons */
+.btn-primary,
+.btn-secondary {
+  color: white;
+}
+
+/* Readable table text */
+.table {
+  font-size: 0.95rem;
+}
+
+/* Bold navbar brand */
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* ========================================
+   Custom Badge Colors
+   ======================================== */
+
+/* Darker watermelon pink badge */
+.badge.bg-pink {
+  background-color: #c91f5d !important;
+  color: white;
+}
+
+/* Deep blue badge (to differentiate from green) */
+.badge.bg-blue {
+  background-color: #1e4d7a !important;
+  color: white;
+}
+
+/* Sowing Method Colors */
+.badge.bg-orange {
+  background-color: #9d4a18 !important;
+  color: white;
+}
+
+.badge.bg-purple {
+  background-color: #5b21b6 !important;
+  color: white;
+}
+
+.badge.bg-teal {
+  background-color: #0a6b61 !important;
+  color: white;
+}
+
+/* ========================================
+   Navbar Improvements
+   ======================================== */
+
+/* Higher contrast for unselected navbar links */
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+/* Active/selected tab stands out more */
+.navbar-nav .nav-link.active {
+  color: white !important;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 0.25rem;
+}
+
+/* ========================================
+   Calendar Customizations
+   ======================================== */
+
+.fc {
+  font-family: var(--bs-body-font-family);
+}
+
+.fc-event {
+  cursor: pointer;
+}
+
+.fc-daygrid-event {
+  white-space: normal;
+}
+
+@media (max-width: 768px) {
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fc-toolbar-chunk {
+    width: 100%;
+    justify-content: center;
+  }
+}

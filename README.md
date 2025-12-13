@@ -10,9 +10,12 @@ Seedling Scheduler automatically calculates when to start seeds indoors, begin h
 
 - **Plant Management**: Create and manage plants with different sowing methods (indoor, direct sow, winter sow, stratify-then-indoor)
 - **Automatic Task Generation**: Tasks are calculated automatically based on your frost date and plant timing parameters
-- **Task Dashboard**: View all upcoming gardening tasks from the past 7 days onward
+- **Task Dashboard**: View all upcoming gardening tasks from the past 7 days onward in table or calendar format
+- **Interactive Calendar**: Visual calendar view powered by FullCalendar with drag-and-drop task management
 - **Configurable Frost Date**: Update your regional last frost date and all tasks regenerate automatically
 - **Multiple Sowing Methods**: Support for various growing strategies with smart task generation
+- **General Tasks**: Create tasks not tied to specific plants for general gardening activities
+- **JSON API**: Programmatic access to tasks for integration with other tools
 
 ## Quick Start
 
@@ -21,6 +24,8 @@ Seedling Scheduler automatically calculates when to start seeds indoors, begin h
 - Ruby 3.3+
 - Rails 8.1+
 - SQLite 3
+- Node.js 18+ (for Vite and frontend assets)
+- npm 9+ (comes with Node.js)
 
 ### Installation
 
@@ -29,8 +34,11 @@ Seedling Scheduler automatically calculates when to start seeds indoors, begin h
 git clone <your-repo-url>
 cd seedling_scheduler
 
-# Install dependencies
+# Install Ruby dependencies
 bundle install
+
+# Install Node.js dependencies
+npm install
 
 # Setup database
 bin/rails db:create
@@ -39,11 +47,23 @@ bin/rails db:migrate
 # Load sample data (optional)
 bin/rails db:seed
 
-# Start the server
-bin/rails server
+# Build frontend assets
+bin/vite build
+
+# Start the development server
+bin/dev
 ```
 
-Visit `http://localhost:3000` to see your task dashboard.
+The `bin/dev` command starts both the Rails server and the Vite development server using Foreman. Visit `http://localhost:3000` to see your task dashboard.
+
+Alternatively, you can run them separately:
+```bash
+# Terminal 1: Rails server
+bin/rails server
+
+# Terminal 2: Vite dev server
+bin/vite dev
+```
 
 ## Basic Usage
 
@@ -61,11 +81,17 @@ Visit `http://localhost:3000` to see your task dashboard.
 - Tasks are generated automatically when you save
 
 ### 3. View Your Schedule
-- Click **Upcoming Tasks** to see your dashboard
+- Click **Task Table** to see tasks in a sortable table format
+- Click **Task Calendar** for an interactive calendar view
+- Toggle between table and calendar views with the view switcher
 - Tasks show when to:
   - Start seeds indoors
   - Begin hardening off
   - Plant outside
+- In calendar view:
+  - Drag and drop tasks to reschedule
+  - Click tasks to edit details
+  - Create new tasks by clicking on dates
 
 ### 4. Manage Plants
 - Edit plants to update timing or details
@@ -91,7 +117,12 @@ For detailed documentation, see:
 
 - **Framework**: Rails 8.1
 - **Database**: SQLite 3
-- **Frontend**: Turbo, Stimulus, Importmap
+- **Frontend**:
+  - Vite (modern build tool)
+  - Turbo (SPA-like page updates)
+  - Stimulus (JavaScript framework)
+  - Bootstrap 5.3 (UI components)
+  - FullCalendar (interactive calendar)
 - **Deployment**: Kamal-ready
 - **Cache/Queue**: Solid Cache, Solid Queue
 
@@ -104,11 +135,20 @@ bin/rails test
 # Run system tests
 bin/rails test:system
 
+# Build frontend assets for test environment
+RAILS_ENV=test bin/vite build
+
 # Run migrations
 bin/rails db:migrate
 
 # Reset database (warning: destroys data)
 bin/rails db:reset
+
+# Rebuild Vite assets
+bin/vite build
+
+# Watch frontend files and rebuild on change
+bin/vite dev
 ```
 
 ## Deployment
