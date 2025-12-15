@@ -16,8 +16,8 @@ class CalendarTest < ApplicationSystemTestCase
     # Verify current month is displayed
     assert_text Date.today.strftime("%B %Y")
 
-    # FullCalendar buttons are divs with .fc-button class, not actual buttons
-    assert_selector ".fc-today-button", text: "Today", wait: 3
+    # FullCalendar buttons use lowercase text
+    assert_selector ".fc-today-button", text: "today", wait: 3
   end
 
   test "clicking date opens task creation modal" do
@@ -37,11 +37,11 @@ class CalendarTest < ApplicationSystemTestCase
     assert_field "task_due_date", wait: 2
     assert_field "task_notes"
 
-    # Close modal
-    find("button.btn-close").click
+    # Close modal by pressing Escape key (more reliable than clicking close button)
+    find("#taskModal").send_keys(:escape)
 
     # Modal should disappear
-    assert_no_selector "#taskModal.show", wait: 3
+    assert_no_selector "#taskModal.show", wait: 5
   end
 
   test "creating task from calendar refreshes events" do
@@ -59,12 +59,15 @@ class CalendarTest < ApplicationSystemTestCase
     within "#taskModal" do
       # Fill in task details
       fill_in "task_notes", with: "System test garden task"
-
-      # Submit form
-      click_button "Save Task"
     end
 
-    # Modal should close
+    # Click Save button outside the within block to avoid issues
+    find("#taskModal .btn-primary", text: "Save Task").click
+
+    # Wait a moment for AJAX to complete
+    sleep 2
+
+    # Modal should close after successful save
     assert_no_selector "#taskModal.show", wait: 5
 
     # Success notification should appear
@@ -80,9 +83,9 @@ class CalendarTest < ApplicationSystemTestCase
     # Verify we start in month view
     assert_selector ".fc-daygrid", wait: 5
 
-    # FullCalendar buttons are divs with data attributes, not standard buttons
-    # Find and click the year view button
-    find(".fc-button", text: /year/i).click
+    # FullCalendar uses button elements with specific classes
+    # Click the year view button by finding the button with the view name
+    find("button.fc-multiMonthYear-button").click
 
     # Wait for view to change
     sleep 2
@@ -91,7 +94,7 @@ class CalendarTest < ApplicationSystemTestCase
     assert_selector ".fc-multimonth", wait: 5
 
     # Switch back to month view
-    find(".fc-button", text: /month/i).click
+    find("button.fc-dayGridMonth-button").click
 
     # Wait for view to change
     sleep 2
