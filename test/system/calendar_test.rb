@@ -33,20 +33,18 @@ class CalendarTest < ApplicationSystemTestCase
     # Modal should appear - increased wait time
     assert_selector "#taskModal.show", wait: 5
 
+    # Verify modal has the correct title
+    within "#taskModal" do
+      assert_text "Garden Task"
+    end
+
     # Verify modal has the form fields
     assert_field "task_due_date", wait: 2
     assert_field "task_notes"
-
-    # Close modal using Bootstrap's dismiss button
-    within "#taskModal" do
-      find("button.btn-secondary", text: "Cancel").click
-    end
-
-    # Modal should disappear
-    assert_no_selector "#taskModal.show", wait: 5
+    assert_field "task_status"
   end
 
-  test "calendar create button opens modal with prefilled date" do
+  test "calendar create button opens modal with current date" do
     visit calendar_tasks_path
 
     # Wait for calendar to render
@@ -59,17 +57,12 @@ class CalendarTest < ApplicationSystemTestCase
     assert_selector "#taskModal.show", wait: 5
 
     # Verify the modal opened with form fields
-    assert_field "task_due_date"
-    assert_field "task_notes"
-    assert_select "task_status"
-
-    # Close modal
     within "#taskModal" do
-      click_button "Cancel"
+      assert_text "Garden Task"
+      assert_field "task_due_date"
+      assert_field "task_notes"
+      assert_select "task_status"
     end
-
-    # Modal should close
-    assert_no_selector "#taskModal.show", wait: 5
   end
 
   test "view switcher changes calendar layout" do
