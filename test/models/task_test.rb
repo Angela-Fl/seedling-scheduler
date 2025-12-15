@@ -69,7 +69,7 @@ class TaskTest < ActiveSupport::TestCase
   # ===================
 
   test "task_type enum values" do
-    assert_equal %w[plant_seeds begin_hardening_off plant_seedlings begin_stratification], Task.task_types.keys
+    assert_equal %w[plant_seeds begin_hardening_off plant_seedlings begin_stratification garden_task], Task.task_types.keys
   end
 
   test "status enum values" do

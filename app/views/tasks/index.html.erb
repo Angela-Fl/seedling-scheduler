@@ -1,8 +1,13 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Upcoming Seedling Tasks</h1>
-  <div class="btn-group">
-    <%= link_to "Table", tasks_path, class: "btn btn-primary active" %>
-    <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-outline-primary" %>
+  <div class="d-flex align-items-center gap-2">
+    <button type="button" class="btn btn-success" onclick="window.dispatchEvent(new CustomEvent('calendar:create', { detail: { date: new Date().toISOString().split('T')[0] } }))">
+      + Create Task
+    </button>
+    <div class="btn-group">
+      <%= link_to "Table", tasks_path, class: "btn btn-primary active" %>
+      <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-outline-primary" %>
+    </div>
   </div>
 </div>
 
@@ -24,7 +29,8 @@
       </thead>
       <tbody>
         <% @tasks.each do |task| %>
-          <tr>
+          <tr style="cursor: pointer;"
+              onclick="<% if task.plant %>window.location.href='<%= plant_path(task.plant) %>'<% else %>window.dispatchEvent(new CustomEvent('calendar:edit', { detail: { id: <%= task.id %>, taskType: '<%= task.task_type %>', plantId: <%= task.plant_id || 'null' %>, notes: <%= task.notes.to_json %>, status: '<%= task.status %>', dueDate: '<%= task.due_date.iso8601 %>' } }))<% end %>">
             <td><%= task.due_date.to_fs(:long) %></td>
             <td>
               <span class="badge" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
@@ -51,3 +57,6 @@
     <p>Add some plants to generate tasks, or update your frost date in settings.</p>
   </div>
 <% end %>
+
+<!-- Task Creation/Edit Modal -->
+<%= render 'tasks/task_modal' %>

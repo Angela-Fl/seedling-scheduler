@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["form", "dateInput", "plantSelect", "taskTypeSelect"]
+  static targets = ["form", "dateInput", "notesInput", "statusSelect"]
 
   connect() {
     this.modal = new window.bootstrap.Modal(document.getElementById('taskModal'))
@@ -26,11 +26,11 @@ export default class extends Controller {
   }
 
   handleEdit(event) {
-    const { id, taskType, plantId, notes, status, dueDate } = event.detail
+    const { id, notes, status, dueDate } = event.detail
 
     this.dateInputTarget.value = dueDate
-    if (plantId) this.plantSelectTarget.value = plantId
-    this.taskTypeSelectTarget.value = taskType
+    this.notesInputTarget.value = notes || ''
+    this.statusSelectTarget.value = status
 
     // Set form action for update
     this.formTarget.action = `/tasks/${id}`
@@ -52,27 +52,54 @@ export default class extends Controller {
     event.preventDefault()
 
     const formData = new FormData(this.formTarget)
-    const method = formData.get('_method') || 'POST'
+    const methodOverride = formData.get('_method')
+    const method = methodOverride ? methodOverride.toUpperCase() : 'POST'
+
+    // Convert FormData to JSON for cleaner Rails handling
+    const data = {}
+    formData.forEach((value, key) => {
+      if (key !== '_method') {
+        // Strip 'task[' prefix and ']' suffix from Rails form field names
+        // e.g., 'task[due_date]' becomes 'due_date'
+        const fieldName = key.replace(/^task\[/, '').replace(/\]$/, '')
+
+        // Convert empty string to null for optional fields
+        if (fieldName === 'plant_id' && value === '') {
+          data[fieldName] = null
+        } else {
+          data[fieldName] = value
+        }
+      }
+    })
 
     try {
       const response = await fetch(this.formTarget.action, {
         method: method,
         headers: {
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: formData
+        body: JSON.stringify({ task: data })
       })
 
       if (response.ok) {
         this.modal.hide()
-        // Trigger calendar reload
+
+        // Trigger calendar reload if on calendar page
         window.dispatchEvent(new CustomEvent('calendar:reload'))
+
+        // If on table view, reload the page
+        if (!document.querySelector('[data-controller="calendar"]')) {
+          window.location.reload()
+        }
+
         window.dispatchEvent(new CustomEvent('notification:show', {
           detail: { message: 'Task saved successfully', type: 'success' }
         }))
       } else {
-        const errors = await response.json()
+        const errorText = await response.text()
+        console.error('Server error:', errorText)
         window.dispatchEvent(new CustomEvent('notification:show', {
           detail: { message: 'Failed to save task', type: 'danger' }
         }))

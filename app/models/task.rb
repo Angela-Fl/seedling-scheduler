@@ -7,7 +7,8 @@ class Task < ApplicationRecord
     plant_seeds: "plant_seeds",
     begin_hardening_off: "begin_hardening_off",
     plant_seedlings: "plant_seedlings",
-    begin_stratification: "begin_stratification"  # Not used yet, placeholder
+    begin_stratification: "begin_stratification",  # Not used yet, placeholder
+    garden_task: "garden_task"
   }, prefix: :task
 
   enum :status, {
@@ -32,6 +33,8 @@ class Task < ApplicationRecord
       "Plant seedlings"
     when "begin_stratification"
       "Begin fridge stratification"
+    when "garden_task"
+      "Garden task"
     else
       task_type.humanize
     end

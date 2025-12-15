@@ -1,8 +1,13 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Task Calendar</h1>
-  <div class="btn-group">
-    <%= link_to "Table", tasks_path, class: "btn btn-outline-primary" %>
-    <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-primary active" %>
+  <div class="d-flex align-items-center gap-2">
+    <button type="button" class="btn btn-success" onclick="window.dispatchEvent(new CustomEvent('calendar:create', { detail: { date: new Date().toISOString().split('T')[0] } }))">
+      + Create Task
+    </button>
+    <div class="btn-group">
+      <%= link_to "Table", tasks_path, class: "btn btn-outline-primary" %>
+      <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-primary active" %>
+    </div>
   </div>
 </div>
 
