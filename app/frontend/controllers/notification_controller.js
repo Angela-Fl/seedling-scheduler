@@ -4,11 +4,14 @@ export default class extends Controller {
   static targets = ["container"]
 
   connect() {
-    window.addEventListener('notification:show', this.show.bind(this))
+    this.boundShowHandler = this.show.bind(this)
+    window.addEventListener('notification:show', this.boundShowHandler)
   }
 
   disconnect() {
-    window.removeEventListener('notification:show', this.show.bind(this))
+    if (this.boundShowHandler) {
+      window.removeEventListener('notification:show', this.boundShowHandler)
+    }
   }
 
   show(event) {
