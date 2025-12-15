@@ -32,5 +32,3 @@ document.addEventListener("turbo:load", () => {
   const popovers = [...document.querySelectorAll('[data-bs-toggle="popover"]')]
   popovers.forEach(el => new bootstrap.Popover(el))
 })
-
-console.log('Vite + Rails + Stimulus loaded successfully')

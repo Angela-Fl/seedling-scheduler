@@ -35,11 +35,17 @@ export default class extends Controller {
     this.calendar.render()
     this.loadTasks()
 
-    // Listen for reload events
-    window.addEventListener('calendar:reload', () => this.loadTasks())
+    // Listen for reload events - bind to ensure proper context
+    this.boundReloadHandler = () => {
+      this.loadTasks()
+    }
+    window.addEventListener('calendar:reload', this.boundReloadHandler)
   }
 
   disconnect() {
+    if (this.boundReloadHandler) {
+      window.removeEventListener('calendar:reload', this.boundReloadHandler)
+    }
     if (this.calendar) this.calendar.destroy()
   }
 
@@ -68,10 +74,17 @@ export default class extends Controller {
   formatEvent(task) {
     const colors = getTaskColor(task.task_type)
 
-    // Build title: show plant name if present, otherwise just task type
-    let title = getTaskDisplayName(task.task_type)
-    if (task.plant_name) {
-      title = `${title}: ${task.plant_name}`
+    // Build title
+    let title
+    if (task.task_type === 'garden_task') {
+      // For garden tasks, use notes as the title
+      title = task.notes || 'Garden task'
+    } else {
+      // For other tasks, show task type and plant name if present
+      title = getTaskDisplayName(task.task_type)
+      if (task.plant_name) {
+        title = `${title}: ${task.plant_name}`
+      }
     }
 
     return {
@@ -101,12 +114,20 @@ export default class extends Controller {
   }
 
   handleEventClick(info) {
-    window.dispatchEvent(new CustomEvent('calendar:edit', {
-      detail: {
-        id: info.event.id,
-        ...info.event.extendedProps
-      }
-    }))
+    const { plantId } = info.event.extendedProps
+
+    // If this is a plant task, navigate to the plant's page
+    if (plantId) {
+      window.location.href = `/plants/${plantId}`
+    } else {
+      // For general garden tasks, open the edit modal
+      window.dispatchEvent(new CustomEvent('calendar:edit', {
+        detail: {
+          id: info.event.id,
+          ...info.event.extendedProps
+        }
+      }))
+    }
   }
 
   async handleEventDrop(info) {
