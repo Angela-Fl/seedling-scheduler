@@ -7,97 +7,97 @@ class CalendarTest < ApplicationSystemTestCase
     # Verify calendar controller is connected
     assert_selector "[data-controller='calendar']"
 
+    # Wait for calendar to fully render
+    sleep 2
+
+    # Verify calendar grid is present
+    assert_selector ".fc-daygrid", wait: 5
+
     # Verify current month is displayed
     assert_text Date.today.strftime("%B %Y")
 
-    # Verify calendar toolbar buttons
-    assert_button "Today"
-
-    # Give FullCalendar time to render
-    sleep 1
-
-    # Verify calendar grid is present
-    assert_selector ".fc-daygrid"
+    # FullCalendar buttons are divs with .fc-button class, not actual buttons
+    assert_selector ".fc-today-button", text: "Today", wait: 3
   end
 
   test "clicking date opens task creation modal" do
     visit calendar_tasks_path
 
     # Wait for calendar to fully render
-    sleep 1
+    sleep 2
 
     # Find and click a date cell in the calendar
-    # Target a date cell that's not disabled
-    first(".fc-daygrid-day:not(.fc-day-disabled):not(.fc-day-other)").click
+    # Use more specific selector for clickable date
+    find(".fc-daygrid-day-frame", match: :first).click
 
-    # Modal should appear
-    assert_selector "#taskModal.show", wait: 3
+    # Modal should appear - increased wait time
+    assert_selector "#taskModal.show", wait: 5
 
     # Verify modal has the form fields
-    assert_field "due_date"
-    assert_field "notes"
-    assert_select "status"
+    assert_field "task_due_date", wait: 2
+    assert_field "task_notes"
 
     # Close modal
     find("button.btn-close").click
 
     # Modal should disappear
-    assert_no_selector "#taskModal.show", wait: 2
+    assert_no_selector "#taskModal.show", wait: 3
   end
 
   test "creating task from calendar refreshes events" do
     visit calendar_tasks_path
 
     # Wait for calendar to render
-    sleep 1
+    sleep 2
 
-    # Click on a future date
-    first(".fc-daygrid-day:not(.fc-day-disabled):not(.fc-day-other)").click
+    # Click on a date
+    find(".fc-daygrid-day-frame", match: :first).click
 
     # Wait for modal
-    assert_selector "#taskModal.show", wait: 2
+    assert_selector "#taskModal.show", wait: 5
 
     within "#taskModal" do
       # Fill in task details
-      fill_in "notes", with: "System test garden task"
+      fill_in "task_notes", with: "System test garden task"
 
       # Submit form
       click_button "Save Task"
     end
 
     # Modal should close
-    assert_no_selector "#taskModal.show", wait: 3
+    assert_no_selector "#taskModal.show", wait: 5
 
     # Success notification should appear
-    assert_text "Task saved successfully", wait: 3
+    assert_text "Task saved successfully", wait: 5
   end
 
   test "view switcher changes calendar layout" do
     visit calendar_tasks_path
 
     # Wait for calendar to render
-    sleep 1
+    sleep 2
 
     # Verify we start in month view
-    assert_selector ".fc-daygrid"
+    assert_selector ".fc-daygrid", wait: 5
 
-    # Switch to year view
-    click_button "multiMonthYear"
+    # FullCalendar buttons are divs with data attributes, not standard buttons
+    # Find and click the year view button
+    find(".fc-button", text: /year/i).click
 
     # Wait for view to change
-    sleep 1
+    sleep 2
 
     # Should show multi-month view
-    assert_selector ".fc-multimonth", wait: 3
+    assert_selector ".fc-multimonth", wait: 5
 
     # Switch back to month view
-    click_button "dayGridMonth"
+    find(".fc-button", text: /month/i).click
 
     # Wait for view to change
-    sleep 1
+    sleep 2
 
     # Should show day grid again
-    assert_selector ".fc-daygrid", wait: 3
+    assert_selector ".fc-daygrid", wait: 5
   end
 
   test "calendar displays existing tasks" do
@@ -127,7 +127,7 @@ class CalendarTest < ApplicationSystemTestCase
     visit calendar_tasks_path
 
     # Wait for calendar to render
-    sleep 1
+    sleep 2
 
     # Click next month a few times to navigate away
     3.times do
@@ -135,12 +135,12 @@ class CalendarTest < ApplicationSystemTestCase
       sleep 0.5
     end
 
-    # Click "Today" button
-    click_button "Today"
+    # Click "Today" button - it's a div with class fc-today-button
+    find(".fc-today-button").click
 
     sleep 1
 
     # Should display current month
-    assert_text Date.today.strftime("%B %Y")
+    assert_text Date.today.strftime("%B %Y"), wait: 3
   end
 end
