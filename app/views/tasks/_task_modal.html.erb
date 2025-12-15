@@ -8,9 +8,9 @@
 
       <%= form_with model: Task.new,
                     id: "taskForm",
-                    data: {
-                      "task-modal_target": "form",
-                      action: "submit->task-modal#submit"
+                    html: {
+                      "data-task-modal-target" => "form",
+                      "data-action" => "submit->task-modal#submit"
                     } do |f| %>
         <%= f.hidden_field :task_type, value: "garden_task" %>
         <%= f.hidden_field :plant_id, value: nil %>
