@@ -25,6 +25,12 @@ class TasksHelperTest < ActionView::TestCase
     assert_equal({ bg: "#6c757d", text: "#ffffff" }, color)
   end
 
+  test "task_badge_color for garden_task" do
+    task = Task.new(task_type: "garden_task")
+    color = task_badge_color(task)
+    assert_equal({ bg: "#C9E4F5", text: "#000000" }, color)
+  end
+
   test "task_badge_color for unknown type" do
     task = Task.new
     color = task_badge_color(task)
