@@ -18,7 +18,7 @@
     "@popperjs/core": "^2.11.8"
   },
   "devDependencies": {
-    "vite": "^5.4.21",
+    "vite": "^6.0.0",
     "vite-plugin-ruby": "^5.1.1"
   }
 }
