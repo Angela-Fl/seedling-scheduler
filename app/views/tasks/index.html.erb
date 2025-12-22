@@ -21,6 +21,7 @@
     <table class="table table-hover table-striped">
       <thead class="table-dark">
         <tr>
+          <th scope="col" style="width: 180px;">Actions</th>
           <th scope="col">Date</th>
           <th scope="col">Task</th>
           <th scope="col">Plant</th>
@@ -29,9 +30,54 @@
       </thead>
       <tbody>
         <% @tasks.each do |task| %>
-          <tr style="cursor: pointer;"
-              onclick="<% if task.plant %>window.location.href='<%= plant_path(task.plant) %>'<% else %>window.dispatchEvent(new CustomEvent('calendar:edit', { detail: { id: <%= task.id %>, taskType: '<%= task.task_type %>', plantId: <%= task.plant_id || 'null' %>, notes: <%= task.notes.to_json %>, status: '<%= task.status %>', dueDate: '<%= task.due_date.iso8601 %>' } }))<% end %>">
-            <td><%= task.due_date.to_fs(:long) %></td>
+          <tr data-controller="task-status task-row"
+              data-task-status-task-id-value="<%= task.id %>"
+              data-task-status-status-value="<%= task.status %>"
+              data-task-status-target="row"
+              data-task-row-task-id-value="<%= task.id %>"
+              data-task-row-plant-id-value="<%= task.plant_id %>"
+              data-task-row-task-type-value="<%= task.task_type %>"
+              data-task-row-notes-value="<%= task.notes.to_json %>"
+              data-task-row-status-value="<%= task.status %>"
+              data-task-row-due-date-value="<%= task.due_date.iso8601 %>"
+              data-action="click->task-row#handleClick"
+              style="cursor: pointer;">
+
+            <td>
+              <div class="d-flex gap-2 align-items-center">
+                <div class="form-check form-check-inline mb-0">
+                  <input class="form-check-input"
+                         type="checkbox"
+                         id="complete-<%= task.id %>"
+                         data-task-status-target="completeCheckbox"
+                         data-action="change->task-status#toggleComplete"
+                         <%= 'checked' if task.status_done? %>
+                         <%= 'disabled' if task.status_skipped? %>
+                         title="Mark as complete">
+                  <label class="form-check-label text-success" for="complete-<%= task.id %>">
+                    ✓
+                  </label>
+                </div>
+
+                <div class="form-check form-check-inline mb-0">
+                  <input class="form-check-input"
+                         type="checkbox"
+                         id="skip-<%= task.id %>"
+                         data-task-status-target="skipCheckbox"
+                         data-action="change->task-status#toggleSkip"
+                         <%= 'checked' if task.status_skipped? %>
+                         <%= 'disabled' if task.status_done? %>
+                         title="Mark as skipped">
+                  <label class="form-check-label text-secondary" for="skip-<%= task.id %>">
+                    ⊘
+                  </label>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <%= task.due_date.to_fs(:long) %>
+            </td>
             <td>
               <span class="badge" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
                 <%= task.display_name %>
@@ -45,7 +91,9 @@
                 <em class="text-muted">General garden task</em>
               <% end %>
             </td>
-            <td><%= task.notes.presence || task.plant&.notes %></td>
+            <td>
+              <%= task.notes.presence || task.plant&.notes %>
+            </td>
           </tr>
         <% end %>
       </tbody>

@@ -34,6 +34,7 @@
             <table class="table table-sm table-hover mb-0">
               <thead class="table-light">
                 <tr>
+                  <th scope="col" style="width: 180px;">Actions</th>
                   <th scope="col">Due Date</th>
                   <th scope="col">Task Type</th>
                   <th scope="col">Timeline</th>
@@ -54,7 +55,43 @@
                       nil
                     end
                   %>
-                  <tr>
+                  <tr data-controller="task-status"
+                      data-task-status-task-id-value="<%= task.id %>"
+                      data-task-status-status-value="<%= task.status %>"
+                      data-task-status-target="row">
+
+                    <td>
+                      <div class="d-flex gap-2 align-items-center">
+                        <div class="form-check form-check-inline mb-0">
+                          <input class="form-check-input"
+                                 type="checkbox"
+                                 id="complete-<%= task.id %>"
+                                 data-task-status-target="completeCheckbox"
+                                 data-action="change->task-status#toggleComplete"
+                                 <%= 'checked' if task.status_done? %>
+                                 <%= 'disabled' if task.status_skipped? %>
+                                 title="Mark as complete">
+                          <label class="form-check-label text-success" for="complete-<%= task.id %>">
+                            ✓
+                          </label>
+                        </div>
+
+                        <div class="form-check form-check-inline mb-0">
+                          <input class="form-check-input"
+                                 type="checkbox"
+                                 id="skip-<%= task.id %>"
+                                 data-task-status-target="skipCheckbox"
+                                 data-action="change->task-status#toggleSkip"
+                                 <%= 'checked' if task.status_skipped? %>
+                                 <%= 'disabled' if task.status_done? %>
+                                 title="Mark as skipped">
+                          <label class="form-check-label text-secondary" for="skip-<%= task.id %>">
+                            ⊘
+                          </label>
+                        </div>
+                      </div>
+                    </td>
+
                     <td><%= task.due_date.to_fs(:long) %></td>
                     <td>
                       <span class="badge" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">

@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [ :update ]
+  before_action :set_task, only: [ :update, :complete, :skip, :reset ]
 
   def index
     @tasks = Task
@@ -39,6 +39,27 @@ class TasksController < ApplicationController
 
   def calendar
     # Calendar view
+  end
+
+  def complete
+    @task.done!
+    render json: task_to_json(@task)
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def skip
+    @task.skip!
+    render json: task_to_json(@task)
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def reset
+    @task.update!(status: "pending")
+    render json: task_to_json(@task)
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   private

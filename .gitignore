@@ -73,3 +73,15 @@ pnpm-debug.log*
 # Vite temp files
 vite.config.*.timestamp-*
 
+# Capybara screenshots (test artifacts)
+capybara-*.png
+
+# Backup files
+*.backup
+
+# System package files (like Chrome installer)
+*.deb
+*.rpm
+
+# Pre-upgrade/migration logs
+pre-upgrade-*.txt

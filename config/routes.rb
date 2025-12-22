@@ -13,5 +13,10 @@ Rails.application.routes.draw do
     collection do
       get :calendar
     end
+    member do
+      patch :complete
+      patch :skip
+      patch :reset
+    end
   end
 end
