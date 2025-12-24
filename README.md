@@ -16,6 +16,7 @@ Seedling Scheduler automatically calculates when to start seeds indoors, begin h
 - **Multiple Sowing Methods**: Support for various growing strategies with smart task generation
 - **General Tasks**: Create tasks not tied to specific plants for general gardening activities
 - **JSON API**: Programmatic access to tasks for integration with other tools
+- **Garden Journal**: Create dated entries to track observations, actions, and plans
 
 ## Quick Start
 
