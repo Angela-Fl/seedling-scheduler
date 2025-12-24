@@ -72,7 +72,14 @@ export default class extends Controller {
   }
 
   formatEvent(task) {
-    const colors = getTaskColor(task.task_type)
+    let colors = getTaskColor(task.task_type)
+
+    // Override colors based on status
+    if (task.status === 'done') {
+      colors = { bg: '#d3d3d3', text: '#000000' } // Light gray
+    } else if (task.status === 'skipped') {
+      colors = { bg: '#e8e8e8', text: '#000000' } // Even lighter gray
+    }
 
     // Build title
     let title
@@ -85,6 +92,13 @@ export default class extends Controller {
       if (task.plant_name) {
         title = `${title}: ${task.plant_name}`
       }
+    }
+
+    // Add status symbol prefix
+    if (task.status === 'done') {
+      title = `✓ ${title}`
+    } else if (task.status === 'skipped') {
+      title = `⊘ ${title}`
     }
 
     return {
@@ -152,6 +166,16 @@ export default class extends Controller {
   handleEventDidMount(info) {
     const { plantName, plantVariety, notes, status } = info.event.extendedProps
 
+    // Apply visual styling based on status
+    if (status === 'done') {
+      // Add strikethrough and italic for done tasks
+      info.el.style.textDecoration = 'line-through'
+      info.el.style.fontStyle = 'italic'
+    } else if (status === 'skipped') {
+      // Add italic for skipped tasks
+      info.el.style.fontStyle = 'italic'
+    }
+
     // Build tooltip content
     let content = ''
     if (plantName) {
@@ -162,7 +186,7 @@ export default class extends Controller {
     if (notes) {
       content += `<small>${notes}</small><br>`
     }
-    content += `<span class="badge bg-${status === 'done' ? 'success' : 'warning'}">${status}</span>`
+    content += `<span class="badge bg-${status === 'done' ? 'success' : status === 'skipped' ? 'secondary' : 'warning'}">${status}</span>`
 
     new window.bootstrap.Tooltip(info.el, {
       title: content,

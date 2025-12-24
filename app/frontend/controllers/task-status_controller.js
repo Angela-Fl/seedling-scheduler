@@ -28,6 +28,8 @@ export default class extends Controller {
         const data = await response.json()
         this.statusValue = data.status
         this.showNotification('Task updated', 'success')
+        // Notify calendar to reload
+        window.dispatchEvent(new CustomEvent('calendar:reload'))
       } else {
         throw new Error('Update failed')
       }
@@ -57,6 +59,8 @@ export default class extends Controller {
         const data = await response.json()
         this.statusValue = data.status
         this.showNotification('Task updated', 'success')
+        // Notify calendar to reload
+        window.dispatchEvent(new CustomEvent('calendar:reload'))
       } else {
         throw new Error('Update failed')
       }
