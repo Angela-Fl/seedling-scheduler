@@ -1,0 +1,2 @@
+module GardenEntriesHelper
+end

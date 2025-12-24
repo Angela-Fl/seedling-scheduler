@@ -1,0 +1,27 @@
+<%= form_with(model: garden_entry) do |form| %>
+  <% if garden_entry.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(garden_entry.errors.count, "error") %> prohibited this garden_entry from being saved:</h2>
+
+      <ul>
+        <% garden_entry.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :entry_date, style: "display: block" %>
+    <%= form.date_field :entry_date, value: (form.object.entry_date || Date.current), class: "form-control" %>
+  </div>
+
+  <div>
+    <%= form.label :body, style: "display: block" %>
+    <%= form.textarea :body, rows: 8, class: "from-control" %>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

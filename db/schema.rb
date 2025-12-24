@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_13_024759) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_24_193053) do
+  create_table "garden_entries", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.date "entry_date"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "plants", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "hardening_offset_days"
