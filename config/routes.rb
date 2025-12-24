@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :garden_entries
   root "tasks#index"
 
   resource :settings, only: [ :edit, :update ]

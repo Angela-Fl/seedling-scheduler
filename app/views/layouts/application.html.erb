@@ -57,6 +57,9 @@
               <%= link_to "Plants", plants_path, class: "nav-link #{current_page?(plants_path) ? 'active' : ''}" %>
             </li>
             <li class="nav-item">
+              <%= link_to "Journal", garden_entries_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
               <%= link_to "Settings", edit_settings_path, class: "nav-link #{current_page?(edit_settings_path) ? 'active' : ''}" %>
             </li>
           </ul>
