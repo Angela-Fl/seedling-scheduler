@@ -31,4 +31,26 @@ module PlantsHelper
     label = sowing_method.titleize.gsub("_", " ")
     content_tag(:span, label, class: "badge", style: "background-color: #{colors[:bg]}; color: #{colors[:text]}")
   end
+
+  def format_seed_depth(depth)
+    return "" if depth.blank?
+
+    # Handle special cases
+    return "Surface sow" if depth.match?(/^surface sow$/i)
+    return "Surface sow (0 inches)" if depth == "0"
+
+    # Handle fractions
+    unit = depth.match?(/^[01]\/\d+$/) ? "inch" : "inches"
+    "#{depth} #{unit}"
+  end
+
+  def format_plant_spacing(spacing)
+    return "" if spacing.blank?
+    "#{spacing} inches"
+  end
+
+  def format_days_to_sprout(days_range)
+    return "" if days_range.blank?
+    "#{days_range} days"
+  end
 end

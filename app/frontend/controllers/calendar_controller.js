@@ -86,6 +86,12 @@ export default class extends Controller {
     if (task.task_type === 'garden_task') {
       // For garden tasks, use notes as the title
       title = task.notes || 'Garden task'
+    } else if (task.task_type === 'observe_sprouts') {
+      // For sprout observation tasks, show as "Sprout window"
+      title = 'Sprout window'
+      if (task.plant_name) {
+        title = `${title}: ${task.plant_name}`
+      }
     } else {
       // For other tasks, show task type and plant name if present
       title = getTaskDisplayName(task.task_type)
@@ -101,7 +107,7 @@ export default class extends Controller {
       title = `⊘ ${title}`
     }
 
-    return {
+    const event = {
       id: task.id,
       title: title,
       start: task.due_date,
@@ -119,6 +125,15 @@ export default class extends Controller {
         dueDate: task.due_date
       }
     }
+
+    // Add end date for multi-day events (FullCalendar uses exclusive end dates)
+    if (task.end_date && task.end_date !== task.due_date) {
+      const endDate = new Date(task.end_date)
+      endDate.setDate(endDate.getDate() + 1) // FullCalendar end dates are exclusive
+      event.end = endDate.toISOString().split('T')[0]
+    }
+
+    return event
   }
 
   handleDateClick(info) {

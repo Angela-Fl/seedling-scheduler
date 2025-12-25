@@ -3,6 +3,8 @@ module TasksHelper
     case task.task_type
     when "plant_seeds"
       { bg: "#FFCBE1", text: "#000000" }  # Light pink for planting seeds
+    when "observe_sprouts"
+      { bg: "#E8D4F1", text: "#000000" }  # Light purple for observation
     when "begin_hardening_off"
       { bg: "#F9E1A8", text: "#000000" }  # Light yellow for hardening
     when "plant_seedlings"

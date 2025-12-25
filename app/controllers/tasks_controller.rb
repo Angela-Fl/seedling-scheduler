@@ -76,6 +76,7 @@ class TasksController < ApplicationController
     {
       id: task.id,
       due_date: task.due_date.iso8601,
+      end_date: task.end_date&.iso8601,
       task_type: task.task_type,
       status: task.status,
       notes: task.notes,

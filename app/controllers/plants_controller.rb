@@ -56,6 +56,7 @@ class PlantsController < ApplicationController
     # Start with basic permitted params
     permitted = params.require(:plant).permit(
       :name, :variety, :sowing_method, :notes,
+      :days_to_sprout, :seed_depth, :plant_spacing,
       :plant_seeds_weeks, :plant_seeds_unit, :plant_seeds_direction,
       :hardening_weeks, :hardening_unit, :hardening_direction,
       :plant_seedlings_weeks, :plant_seedlings_unit, :plant_seedlings_direction

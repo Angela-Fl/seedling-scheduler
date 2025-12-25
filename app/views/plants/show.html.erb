@@ -15,6 +15,21 @@
             <%= sowing_method_badge(@plant.sowing_method) %>
           </dd>
 
+          <% if @plant.days_to_sprout.present? %>
+            <dt class="col-sm-3">Days to sprout:</dt>
+            <dd class="col-sm-9"><%= format_days_to_sprout(@plant.days_to_sprout) %></dd>
+          <% end %>
+
+          <% if @plant.seed_depth.present? %>
+            <dt class="col-sm-3">Seed depth:</dt>
+            <dd class="col-sm-9"><%= format_seed_depth(@plant.seed_depth) %></dd>
+          <% end %>
+
+          <% if @plant.plant_spacing.present? %>
+            <dt class="col-sm-3">Plant spacing:</dt>
+            <dd class="col-sm-9"><%= format_plant_spacing(@plant.plant_spacing) %></dd>
+          <% end %>
+
           <% if @plant.notes.present? %>
             <dt class="col-sm-3">Notes:</dt>
             <dd class="col-sm-9"><%= simple_format(@plant.notes, class: "mb-0") %></dd>
@@ -47,6 +62,14 @@
                     offset = case task.task_type
                     when "plant_seeds"
                       @plant.plant_seeds_offset_days
+                    when "observe_sprouts"
+                      # Calculate combined offset: plant_seeds + days_to_sprout
+                      sprout_days = @plant.send(:parse_earliest_sprout_days)
+                      if sprout_days && @plant.plant_seeds_offset_days
+                        @plant.plant_seeds_offset_days + sprout_days
+                      else
+                        nil
+                      end
                     when "begin_hardening_off"
                       @plant.hardening_offset_days
                     when "plant_seedlings"

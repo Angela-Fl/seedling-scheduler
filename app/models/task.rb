@@ -5,6 +5,7 @@ class Task < ApplicationRecord
 
   enum :task_type, {
     plant_seeds: "plant_seeds",
+    observe_sprouts: "observe_sprouts",
     begin_hardening_off: "begin_hardening_off",
     plant_seedlings: "plant_seedlings",
     begin_stratification: "begin_stratification",  # Not used yet, placeholder
@@ -27,6 +28,8 @@ class Task < ApplicationRecord
     case task_type
     when "plant_seeds"
       "Plant seeds"
+    when "observe_sprouts"
+      "Check for sprouts"
     when "begin_hardening_off"
       "Begin hardening off"
     when "plant_seedlings"

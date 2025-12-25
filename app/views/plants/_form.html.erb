@@ -133,6 +133,29 @@
     <div class="form-text">Not needed for direct sow.</div>
   </div>
 
+  <%# Growing Details Section %>
+  <fieldset class="mb-3">
+    <legend class="form-label">Growing Details <span class="text-muted">(optional)</span></legend>
+
+    <div class="mb-2">
+      <%= f.label :days_to_sprout, "Days to sprout", class: "form-label" %>
+      <%= f.text_field :days_to_sprout, class: "form-control", placeholder: "e.g., 7-14" %>
+      <div class="form-text">Range or number of days until seedlings may appear. Creates a calendar reminder.</div>
+    </div>
+
+    <div class="mb-2">
+      <%= f.label :seed_depth, "Seed depth", class: "form-label" %>
+      <%= f.text_field :seed_depth, class: "form-control", placeholder: "e.g., 1/4, 0, or surface sow" %>
+      <div class="form-text">Depth to plant seeds (as a fraction of an inch, 0, or 'surface sow').</div>
+    </div>
+
+    <div class="mb-2">
+      <%= f.label :plant_spacing, "Plant spacing", class: "form-label" %>
+      <%= f.text_field :plant_spacing, class: "form-control", placeholder: "e.g., 12-18" %>
+      <div class="form-text">Recommended spacing between plants in inches.</div>
+    </div>
+  </fieldset>
+
   <%# Notes Textarea %>
   <div class="mb-3">
     <%= f.label :notes, class: "form-label" %>
