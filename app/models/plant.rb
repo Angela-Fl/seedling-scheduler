@@ -20,13 +20,13 @@ class Plant < ApplicationRecord
 
   # Format validations for optional growing details fields
   validates :days_to_sprout,
-    format: { with: /\d+/, message: "should contain a number or range (e.g., '7-14')" },
+    format: { with: /\A\d+(-\d+)?\z/, message: "should contain a number or range (e.g., '7-14')" },
     allow_blank: true
   validates :seed_depth,
     format: { with: /\A(\d+\/\d+|0|surface sow)\z/i, message: "should be a fraction (e.g., '1/4'), '0', or 'surface sow'" },
     allow_blank: true
   validates :plant_spacing,
-    format: { with: /\d+/, message: "should contain a number or range (e.g., '12-18')" },
+    format: { with: /\A\d+(-\d+)?\z/, message: "should contain a number or range (e.g., '12-18')" },
     allow_blank: true
 
   validate :all_plants_must_have_plant_seeds_offset
