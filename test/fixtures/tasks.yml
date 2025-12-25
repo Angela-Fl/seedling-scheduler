@@ -1,28 +1,33 @@
 zinnia_start:
+  user: one
   plant: zinnia
   task_type: plant_seeds
   due_date: 2026-03-24
   status: pending
 
 zinnia_harden:
+  user: one
   plant: zinnia
   task_type: begin_hardening_off
   due_date: 2026-04-28
   status: pending
 
 zinnia_plant:
+  user: one
   plant: zinnia
   task_type: plant_seedlings
   due_date: 2026-05-12
   status: pending
 
 sunflower_plant:
+  user: one
   plant: sunflower
   task_type: plant_seeds
   due_date: 2026-05-12
   status: pending
 
 completed_task:
+  user: one
   plant: snapdragon
   task_type: plant_seeds
   due_date: 2026-02-24

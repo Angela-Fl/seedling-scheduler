@@ -2,7 +2,7 @@ class PlantsController < ApplicationController
   before_action :set_plant, only: [ :show, :edit, :update, :destroy, :regenerate_tasks ]
 
   def index
-    @plants = Plant.order(:name)
+    @plants = current_user.plants.order(:name)
   end
 
   def show
@@ -10,14 +10,14 @@ class PlantsController < ApplicationController
   end
 
   def new
-    @plant = Plant.new
+    @plant = current_user.plants.new
   end
 
   def edit
   end
 
   def create
-    @plant = Plant.new(plant_params)
+    @plant = current_user.plants.new(plant_params)
 
     if @plant.save
       @plant.generate_tasks!(Setting.frost_date)
@@ -49,7 +49,7 @@ class PlantsController < ApplicationController
   private
 
   def set_plant
-    @plant = Plant.find(params[:id])
+    @plant = current_user.plants.find(params[:id])
   end
 
   def plant_params

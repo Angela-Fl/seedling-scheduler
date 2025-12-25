@@ -2,6 +2,9 @@ class Task < ApplicationRecord
   HISTORY_DAYS = 7
 
   belongs_to :plant, optional: true
+  belongs_to :user
+
+  before_validation :set_user_from_plant, on: :create
 
   enum :task_type, {
     plant_seeds: "plant_seeds",
@@ -58,5 +61,10 @@ class Task < ApplicationRecord
     else
       display_name  # Just task type for general tasks
     end
+  end
+
+  private
+  def set_user_from_plant
+    self.user ||= plant&.user
   end
 end

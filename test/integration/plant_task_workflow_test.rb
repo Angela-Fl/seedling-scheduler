@@ -2,6 +2,7 @@ require "test_helper"
 
 class PlantTaskWorkflowTest < ActionDispatch::IntegrationTest
   test "creating indoor start plant generates all three task types" do
+    sign_in users(:one)
     get new_plant_path
     assert_response :success
 
@@ -37,6 +38,7 @@ class PlantTaskWorkflowTest < ActionDispatch::IntegrationTest
   end
 
   test "creating direct sow plant generates only plant_seeds task" do
+    sign_in users(:one)
     assert_difference("Plant.count", 1) do
       assert_difference("Task.count", 1) do
         post plants_path, params: {
@@ -58,6 +60,7 @@ class PlantTaskWorkflowTest < ActionDispatch::IntegrationTest
   end
 
   test "editing plant regenerates tasks with new dates" do
+    sign_in users(:one)
     plant = plants(:zinnia)
     original_task_ids = plant.tasks.pluck(:id)
 
@@ -84,6 +87,7 @@ class PlantTaskWorkflowTest < ActionDispatch::IntegrationTest
   end
 
   test "deleting plant removes from plant list and task list" do
+    sign_in users(:one)
     plant = plants(:zinnia)
     task_count = plant.tasks.count
 
@@ -104,6 +108,7 @@ class PlantTaskWorkflowTest < ActionDispatch::IntegrationTest
   end
 
   test "full workflow: create plant, view tasks, edit plant, see updated tasks" do
+    sign_in users(:one)
     # Step 1: Create a new plant
     post plants_path, params: {
       plant: {

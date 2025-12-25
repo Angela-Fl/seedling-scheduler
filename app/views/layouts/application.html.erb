@@ -63,6 +63,27 @@
               <%= link_to "Settings", edit_settings_path, class: "nav-link #{current_page?(edit_settings_path) ? 'active' : ''}" %>
             </li>
           </ul>
+
+          <%# Authentication links on the right %>
+          <ul class="navbar-nav ms-auto">
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <span class="navbar-text text-white me-3">
+                  <%= current_user.email %>
+                </span>
+              </li>
+              <li class="nav-item">
+                <%= button_to "Log Out", destroy_user_session_path, method: :delete, class: "btn btn-outline-light btn-sm" %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Log In", new_user_session_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
         </div>
       </div>
     </nav>

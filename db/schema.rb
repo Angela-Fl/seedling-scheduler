@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_24_221731) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_25_192706) do
   create_table "garden_entries", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
     t.date "entry_date"
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_garden_entries_on_user_id"
   end
 
   create_table "plants", force: :cascade do |t|
@@ -30,7 +32,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_221731) do
     t.string "seed_depth"
     t.string "sowing_method"
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.string "variety"
+    t.index ["user_id"], name: "index_plants_on_user_id"
   end
 
   create_table "settings", force: :cascade do |t|
@@ -49,8 +53,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_221731) do
     t.string "status"
     t.string "task_type"
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["plant_id"], name: "index_tasks_on_plant_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "garden_entries", "users"
+  add_foreign_key "plants", "users"
   add_foreign_key "tasks", "plants"
+  add_foreign_key "tasks", "users"
 end

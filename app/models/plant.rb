@@ -2,6 +2,7 @@ class Plant < ApplicationRecord
   DAYS_PER_WEEK = 7
 
   has_many :tasks, dependent: :destroy
+  belongs_to :user
 
   # How you start this plant
   enum :sowing_method, {

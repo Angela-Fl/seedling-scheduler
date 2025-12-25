@@ -1,6 +1,10 @@
 require "test_helper"
 
 class TasksControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in users(:one)
+  end
+
   test "should get index" do
     get tasks_url
     assert_response :success
@@ -9,6 +13,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
   test "index shows tasks from last 7 days" do
     plant = plants(:zinnia)
     old_task = plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: Date.current - Task::HISTORY_DAYS.days,
       status: "pending"
@@ -23,11 +28,13 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   test "index does not show tasks older than 7 days" do
     plant = Plant.create!(
+      user: users(:one),
       name: "Test Plant",
       sowing_method: "direct_sow",
       plant_seeds_offset_days: 7
     )
     very_old_task = plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: Date.current - (Task::HISTORY_DAYS + 1).days,
       status: "pending"
@@ -44,6 +51,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     plant = plants(:zinnia)
     future_date = Date.current + 30.days
     future_task = plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: future_date,
       status: "pending"
@@ -62,16 +70,19 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     plant.tasks.destroy_all
 
     task1 = plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: Date.current + 5.days,
       status: "pending"
     )
     task2 = plant.tasks.create!(
+      user: users(:one),
       task_type: "begin_hardening_off",
       due_date: Date.current + 2.days,
       status: "pending"
     )
     task3 = plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seedlings",
       due_date: Date.current + 8.days,
       status: "pending"
@@ -138,11 +149,13 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
     # Create tasks outside the range
     plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: start_date - 10.days,
       status: "pending"
     )
     plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: end_date + 10.days,
       status: "pending"
@@ -150,6 +163,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
     # Create task inside the range
     in_range_task = plant.tasks.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: start_date + 3.days,
       status: "pending"
