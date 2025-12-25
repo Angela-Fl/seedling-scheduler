@@ -2,6 +2,7 @@ require "test_helper"
 
 class FrostDateUpdateTest < ActionDispatch::IntegrationTest
   test "updating frost date regenerates all plant tasks" do
+    sign_in users(:one)
     zinnia = plants(:zinnia)
     sunflower = plants(:sunflower)
 
@@ -23,6 +24,7 @@ class FrostDateUpdateTest < ActionDispatch::IntegrationTest
   end
 
   test "frost date change affects task list display" do
+    sign_in users(:one)
     get tasks_path
     original_html = response.body
 
@@ -36,6 +38,7 @@ class FrostDateUpdateTest < ActionDispatch::IntegrationTest
   end
 
   test "invalid frost date shows error and does not change tasks" do
+    sign_in users(:one)
     original_frost_date = Setting.frost_date
     zinnia = plants(:zinnia)
     original_task_date = zinnia.tasks.first.due_date
@@ -50,6 +53,7 @@ class FrostDateUpdateTest < ActionDispatch::IntegrationTest
   end
 
   test "full workflow: view settings, update frost date, verify all plants affected" do
+    sign_in users(:one)
     # Step 1: View settings page
     get edit_settings_path
     assert_response :success
@@ -84,6 +88,7 @@ class FrostDateUpdateTest < ActionDispatch::IntegrationTest
   end
 
   test "multiple frost date updates continue to work correctly" do
+    sign_in users(:one)
     plant = plants(:zinnia)
 
     # First update

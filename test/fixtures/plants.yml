@@ -1,4 +1,5 @@
 zinnia:
+  user: one
   name: Zinnia
   variety: Mixed
   sowing_method: indoor_start
@@ -8,6 +9,7 @@ zinnia:
   notes: Needs warmth, hates frost.
 
 sunflower:
+  user: one
   name: Sunflower
   variety: Autumn Beauty
   sowing_method: direct_sow
@@ -15,6 +17,7 @@ sunflower:
   notes: Direct sow once soil is warming.
 
 snapdragon:
+  user: one
   name: Snapdragon
   variety: Tall mix
   sowing_method: indoor_start
@@ -24,6 +27,7 @@ snapdragon:
   notes: Cool tolerant.
 
 milkweed:
+  user: one
   name: Milkweed
   variety: Common
   sowing_method: fridge_stratify

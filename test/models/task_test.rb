@@ -7,6 +7,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "valid task with all required attributes" do
     task = Task.new(
+      user: users(:one),
       plant: plants(:zinnia),
       task_type: "plant_seeds",
       due_date: Date.today,
@@ -17,6 +18,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "requires due_date" do
     task = Task.new(
+      user: users(:one),
       plant: plants(:zinnia),
       task_type: "plant_seeds",
       status: "pending"
@@ -27,6 +29,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "requires task_type" do
     task = Task.new(
+      user: users(:one),
       plant: plants(:zinnia),
       due_date: Date.today,
       status: "pending"
@@ -37,6 +40,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "requires status" do
     task = Task.new(
+      user: users(:one),
       plant: plants(:zinnia),
       task_type: "plant_seeds",
       due_date: Date.today
@@ -47,6 +51,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "plant is optional" do
     task = Task.new(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: Date.today,
       status: "pending"
@@ -103,6 +108,7 @@ class TaskTest < ActiveSupport::TestCase
   test "display_name for fridge_stratify plant_seedlings task" do
     plant = plants(:milkweed)
     task = Task.create!(
+      user: users(:one),
       plant: plant,
       task_type: "plant_seedlings",
       due_date: Date.today,
@@ -157,6 +163,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "task can be created without a plant" do
     task = Task.create!(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: Date.today,
       status: "pending",
@@ -168,6 +175,7 @@ class TaskTest < ActiveSupport::TestCase
 
   test "display_subject shows only task name when plant is nil" do
     task = Task.new(
+      user: users(:one),
       task_type: "plant_seeds",
       due_date: Date.today,
       status: "pending"

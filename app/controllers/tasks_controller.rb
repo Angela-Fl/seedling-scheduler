@@ -2,7 +2,7 @@ class TasksController < ApplicationController
   before_action :set_task, only: [ :update, :complete, :skip, :reset ]
 
   def index
-    @tasks = Task
+    @tasks = current_user.tasks
       .includes(:plant)
       .where("due_date >= ?", Date.current - Task::HISTORY_DAYS.days)
       .order(:due_date)
@@ -10,18 +10,31 @@ class TasksController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
+        tasks = @tasks
+
         if params[:start] && params[:end]
           start_date = Date.parse(params[:start])
           end_date = Date.parse(params[:end])
-          @tasks = @tasks.where(due_date: start_date..end_date)
+          tasks = tasks.where(due_date: start_date..end_date)
         end
-        render json: @tasks.map { |t| task_to_json(t) }
+
+        render json: tasks.map { |t| task_to_json(t) }
       end
     end
   end
 
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.new(task_params)
+
+    # If a plant_id is supplied, ensure it belongs to the current user.
+    if @task.plant_id.present?
+      plant = current_user.plants.find_by(id: @task.plant_id)
+      return render json: { error: "Plant not found" }, status: :not_found unless plant
+
+      @task.plant = plant
+      @task.user = current_user
+    end
+
     if @task.save
       render json: task_to_json(@task), status: :created
     else
@@ -30,6 +43,15 @@ class TasksController < ApplicationController
   end
 
   def update
+    # If the update includes plant_id, ensure you can only set it to one of your plants.
+    if task_params.key?(:plant_id)
+      if task_params[:plant_id].present?
+        plant = current_user.plants.find_by(id: task_params[:plant_id])
+        return render json: { error: "Plant not found" }, status: :not_found unless plant
+      end
+      # If plant_id is blank, that means "general task" — allowed.
+    end
+
     if @task.update(task_params)
       render json: task_to_json(@task)
     else
@@ -65,10 +87,11 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.find(params[:id])
+    @task = current_user.tasks.find(params[:id])
   end
 
   def task_params
+    # NOTE: We intentionally do NOT permit :user_id. Ownership is server-controlled.
     params.require(:task).permit(:due_date, :task_type, :status, :notes, :plant_id)
   end
 

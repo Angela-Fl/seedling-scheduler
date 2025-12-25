@@ -8,8 +8,8 @@ class SettingsController < ApplicationController
 
     Setting.set_frost_date(new_date)
 
-    # regenerate all tasks for all plants
-    Plant.find_each do |plant|
+    # SECURITY FIX: Only regenerate tasks for current user's plants
+    current_user.plants.find_each do |plant|
       plant.generate_tasks!(Setting.frost_date)
     end
 

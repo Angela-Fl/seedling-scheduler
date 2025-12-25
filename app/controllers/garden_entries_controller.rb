@@ -3,7 +3,7 @@ class GardenEntriesController < ApplicationController
 
   # GET /garden_entries or /garden_entries.json
   def index
-    @garden_entries = GardenEntry.order(entry_date: :desc, created_at: :desc)
+    @garden_entries = current_user.garden_entries.order(entry_date: :desc, created_at: :desc)
   end
 
   # GET /garden_entries/1 or /garden_entries/1.json
@@ -12,7 +12,7 @@ class GardenEntriesController < ApplicationController
 
   # GET /garden_entries/new
   def new
-    @garden_entry = GardenEntry.new
+    @garden_entry = current_user.garden_entries.new
   end
 
   # GET /garden_entries/1/edit
@@ -21,7 +21,7 @@ class GardenEntriesController < ApplicationController
 
   # POST /garden_entries or /garden_entries.json
   def create
-    @garden_entry = GardenEntry.new(garden_entry_params)
+    @garden_entry = current_user.garden_entries.new(garden_entry_params)
 
     respond_to do |format|
       if @garden_entry.save
@@ -58,13 +58,14 @@ class GardenEntriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_garden_entry
-      @garden_entry = GardenEntry.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def garden_entry_params
-      params.expect(garden_entry: [ :entry_date, :body ])
-    end
+  # Finds only entries owned by the current user
+  def set_garden_entry
+    @garden_entry = current_user.garden_entries.find(params[:id])
+  end
+
+  # Never permit :user_id from the form
+  def garden_entry_params
+    params.require(:garden_entry).permit(:entry_date, :body)
+  end
 end

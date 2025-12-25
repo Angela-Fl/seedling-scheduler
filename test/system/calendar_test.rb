@@ -97,6 +97,7 @@ class CalendarTest < ApplicationSystemTestCase
   test "calendar displays existing tasks" do
     # Create a task in the database
     task = Task.create!(
+      user: users(:one),
       task_type: "garden_task",
       due_date: Date.today + 7.days,
       status: "pending",

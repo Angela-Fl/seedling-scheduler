@@ -1,6 +1,10 @@
 require "test_helper"
 
 class SettingsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in users(:one)
+  end
+
   test "should get edit" do
     get edit_settings_url
     assert_response :success

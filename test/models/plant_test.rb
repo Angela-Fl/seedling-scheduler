@@ -7,6 +7,7 @@ class PlantTest < ActiveSupport::TestCase
 
   test "valid plant with all attributes" do
     plant = Plant.new(
+      user: users(:one),
       name: "Tomato",
       variety: "Cherry",
       sowing_method: "indoor_start",
@@ -70,6 +71,7 @@ class PlantTest < ActiveSupport::TestCase
 
   test "direct_sow plants are valid with plant_seeds_offset_days" do
     plant = Plant.new(
+      user: users(:one),
       name: "Sunflower",
       sowing_method: "direct_sow",
       plant_seeds_offset_days: 7
@@ -79,6 +81,7 @@ class PlantTest < ActiveSupport::TestCase
 
   test "offset values can be negative integers" do
     plant = Plant.new(
+      user: users(:one),
       name: "Tomato",
       sowing_method: "indoor_start",
       plant_seeds_offset_days: -42,
@@ -158,6 +161,7 @@ class PlantTest < ActiveSupport::TestCase
 
   test "generate_tasks! creates plant_seeds task for outdoor_start plants" do
     plant = Plant.create!(
+      user: users(:one),
       name: "Echinacea",
       sowing_method: "outdoor_start",
       plant_seeds_offset_days: -70,
@@ -174,6 +178,7 @@ class PlantTest < ActiveSupport::TestCase
 
   test "generate_tasks! does not create hardening task for outdoor_start plants" do
     plant = Plant.create!(
+      user: users(:one),
       name: "Echinacea",
       sowing_method: "outdoor_start",
       plant_seeds_offset_days: -70,

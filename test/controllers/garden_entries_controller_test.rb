@@ -2,6 +2,7 @@ require "test_helper"
 
 class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in users(:one)
     @garden_entry = garden_entries(:one)
   end
 
@@ -13,8 +14,8 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
 
   test "index displays entries in correct order" do
     # Create entries with different dates
-    older_entry = GardenEntry.create!(entry_date: 1.week.ago, body: "Older entry")
-    newer_entry = GardenEntry.create!(entry_date: Date.current, body: "Newer entry")
+    older_entry = GardenEntry.create!(user: users(:one), entry_date: 1.week.ago, body: "Older entry")
+    newer_entry = GardenEntry.create!(user: users(:one), entry_date: Date.current, body: "Newer entry")
 
     get garden_entries_url
     assert_response :success

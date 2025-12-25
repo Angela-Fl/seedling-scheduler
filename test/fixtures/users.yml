@@ -1,0 +1,11 @@
+one:
+  email: one@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123456") %>
+  confirmed_at: <%= Time.now %>
+  failed_attempts: 0
+
+two:
+  email: two@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123456") %>
+  confirmed_at: <%= Time.now %>
+  failed_attempts: 0
