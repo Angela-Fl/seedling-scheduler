@@ -26,8 +26,8 @@
             <td>
               <%= sowing_method_badge(plant.sowing_method) %>
             </td>
-            <td class="text-end">
-              <div class="btn-group" role="group">
+            <td class="text-start text-md-end">
+              <div class="d-flex flex-column flex-md-row gap-2 plant-actions-mobile" role="group">
                 <%= link_to "View", plant_path(plant), class: "btn btn-sm btn-outline-primary" %>
                 <%= link_to "Edit", edit_plant_path(plant), class: "btn btn-sm btn-outline-secondary" %>
                 <%= link_to "Delete", plant_path(plant),

@@ -12,7 +12,7 @@ export default class extends Controller {
 
   handleClick(event) {
     // Don't navigate if clicking on the actions column or its children
-    if (event.target.closest('td:first-child')) {
+    if (event.target.closest('td:last-child')) {
       return
     }
 

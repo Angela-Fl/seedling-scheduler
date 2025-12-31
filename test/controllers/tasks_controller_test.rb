@@ -61,7 +61,8 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # Verify the future task date appears in the response
-    assert_select "td", text: future_date.to_fs(:long), count: 1
+    # Note: We now have both desktop and mobile date formats in the HTML
+    assert_select "td", text: /#{Regexp.escape(future_date.strftime("%B %-d"))}/
   end
 
   test "index orders tasks by due_date" do
@@ -112,13 +113,13 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
   test "should get calendar view" do
     get calendar_tasks_url
     assert_response :success
-    assert_select "h1", text: "Task Calendar"
+    assert_select "h1", text: "Tasks"
   end
 
   test "calendar view shows last frost date" do
     get calendar_tasks_url
     assert_response :success
-    assert_select ".alert", text: /Last frost date/
+    assert_select "small.text-muted", text: /Last frost date/
   end
 
   # ===================

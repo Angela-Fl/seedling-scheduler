@@ -1,31 +1,48 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>Upcoming Seedling Tasks</h1>
-  <div class="d-flex align-items-center gap-2">
-    <button type="button" class="btn btn-success" onclick="window.dispatchEvent(new CustomEvent('calendar:create', { detail: { date: new Date().toISOString().split('T')[0] } }))">
-      + Create Task
-    </button>
-    <div class="btn-group">
-      <%= link_to "Table", tasks_path, class: "btn btn-primary active" %>
-      <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-outline-primary" %>
-    </div>
-  </div>
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h1>Tasks</h1>
+  <small class="text-muted">
+    Last frost date: <%= Setting.frost_date.to_fs(:long) %>
+    <%= link_to "edit", edit_settings_path, class: "ms-2" %>
+  </small>
 </div>
 
-<div class="alert alert-secondary" role="alert">
-  <strong>Last frost date:</strong> <%= Setting.frost_date.to_fs(:long) %>
-  <%= link_to "Edit", edit_settings_path, class: "btn btn-sm btn-primary ms-2" %>
+<div class="d-flex justify-content-between align-items-end mb-0">
+  <div class="d-flex gap-2" role="group" aria-label="View toggle">
+    <%= link_to tasks_path, class: "text-decoration-none d-block" do %>
+      <div class="text-center px-4 py-3 bg-success text-white fw-bold task-tab task-tab-active">
+        Table
+      </div>
+    <% end %>
+    <%= link_to calendar_tasks_path, class: "text-decoration-none d-block" do %>
+      <div class="text-center px-4 pt-3 pb-1 bg-light text-muted fw-bold border task-tab task-tab-inactive">
+        Calendar
+      </div>
+    <% end %>
+  </div>
+  <button type="button" class="btn btn-new-task text-dark mb-3" onclick="window.dispatchEvent(new CustomEvent('calendar:create', { detail: { date: new Date().toISOString().split('T')[0] } }))">
+    + New Task
+  </button>
 </div>
 
 <% if @tasks.any? %>
-  <div class="table-responsive">
-    <table class="table table-hover table-striped">
+  <%
+    # Calculate year(s) for mobile header
+    task_years = @tasks.map { |t| [t.due_date.year, t.end_date&.year].compact }.flatten.uniq.sort
+    year_display = task_years.length == 1 ? "#{task_years.first}" : "#{task_years.first}-#{task_years.last}"
+  %>
+  <div class="bg-success p-4 task-content-container">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped bg-white tasks-table">
       <thead class="table-dark">
         <tr>
-          <th scope="col" style="width: 180px;">Actions</th>
-          <th scope="col">Date</th>
+          <th scope="col">
+            Date
+            <span class="d-inline d-md-none task-year-header">(<%= year_display %>)</span>
+          </th>
           <th scope="col">Task</th>
           <th scope="col">Plant</th>
           <th scope="col">Notes</th>
+          <th scope="col" class="actions-header">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -44,7 +61,41 @@
               style="cursor: pointer;">
 
             <td>
-              <div class="d-flex gap-2 align-items-center">
+              <% if task.end_date.present? && task.end_date != task.due_date %>
+                <div class="task-date-range">
+                  <span class="task-date-start">
+                    <span class="d-none d-md-inline"><%= task.due_date.strftime("%B %-d") %> -</span>
+                    <span class="d-inline d-md-none"><%= task.due_date.strftime("%b %-d") %> -</span>
+                  </span>
+                  <span class="task-date-end">
+                    <span class="d-none d-md-inline"><%= task.end_date.to_fs(:long) %></span>
+                    <span class="d-inline d-md-none"><%= task.end_date.strftime("%b %-d") %></span>
+                  </span>
+                </div>
+              <% else %>
+                <span class="d-none d-md-inline"><%= task.due_date.to_fs(:long) %></span>
+                <span class="d-inline d-md-none"><%= task.due_date.strftime("%b %-d") %></span>
+              <% end %>
+            </td>
+            <td>
+              <span class="badge d-inline-flex align-items-center" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
+                <%= task_icon_tag(task.task_type, size: "14px").html_safe %>
+                <%= task.display_name %>
+              </span>
+            </td>
+            <td>
+              <% if task.plant %>
+                <strong><%= task.plant.name %></strong><br>
+                <small class="text-muted"><%= task.plant.variety %></small>
+              <% else %>
+                <em class="text-muted">General garden task</em>
+              <% end %>
+            </td>
+            <td>
+              <%= task.notes.presence || task.plant&.notes %>
+            </td>
+            <td>
+              <div class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center task-actions-mobile">
                 <div class="form-check form-check-inline mb-0">
                   <input class="form-check-input"
                          type="checkbox"
@@ -74,35 +125,18 @@
                 </div>
               </div>
             </td>
-
-            <td>
-              <%= task.due_date.to_fs(:long) %>
-            </td>
-            <td>
-              <span class="badge" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
-                <%= task.display_name %>
-              </span>
-            </td>
-            <td>
-              <% if task.plant %>
-                <strong><%= task.plant.name %></strong><br>
-                <small class="text-muted"><%= task.plant.variety %></small>
-              <% else %>
-                <em class="text-muted">General garden task</em>
-              <% end %>
-            </td>
-            <td>
-              <%= task.notes.presence || task.plant&.notes %>
-            </td>
           </tr>
         <% end %>
       </tbody>
     </table>
+    </div>
   </div>
 <% else %>
-  <div class="alert alert-warning" role="alert">
-    <h4 class="alert-heading">No tasks yet</h4>
-    <p>Add some plants to generate tasks, or update your frost date in settings.</p>
+  <div class="bg-success p-4 task-content-container">
+    <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">No tasks yet</h4>
+      <p>Add some plants to generate tasks, or update your frost date in settings.</p>
+    </div>
   </div>
 <% end %>
 

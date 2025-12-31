@@ -15,4 +15,23 @@ module TasksHelper
       { bg: "#6c757d", text: "#ffffff" }  # Gray for other tasks
     end
   end
+
+  def task_icon_path(task_type)
+    icon_map = {
+      "plant_seeds" => "/images/task-icons/plant_seeds.svg",
+      "begin_hardening_off" => "/images/task-icons/begin_hardening_off.svg",
+      "garden_task" => "/images/task-icons/garden_task.svg",
+      "plant_seedlings" => "/images/task-icons/plant_seedlings.svg"
+    }
+    icon_map[task_type]
+  end
+
+  def task_icon_tag(task_type, options = {})
+    icon_path = task_icon_path(task_type)
+    return "" unless icon_path
+
+    size = options[:size] || "16px"
+    css_class = options[:class] || ""
+    image_tag(icon_path, alt: task_type, style: "width: #{size}; height: #{size}; margin-right: 4px;", class: css_class)
+  end
 end
