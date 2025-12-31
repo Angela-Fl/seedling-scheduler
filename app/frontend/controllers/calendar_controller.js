@@ -23,6 +23,12 @@ export default class extends Controller {
         right: 'dayGridMonth,multiMonthYear'
       },
       height: 'auto',
+      views: {
+        multiMonthYear: {
+          dayMaxEvents: 3,
+          aspectRatio: 0.7
+        }
+      },
       editable: true,
       selectable: true,
       dateClick: this.handleDateClick.bind(this),
@@ -126,10 +132,16 @@ export default class extends Controller {
       }
     }
 
-    // Add end date for multi-day events (FullCalendar uses exclusive end dates)
+    // Add end date (FullCalendar uses exclusive end dates)
     if (task.end_date && task.end_date !== task.due_date) {
+      // Multi-day events
       const endDate = new Date(task.end_date)
       endDate.setDate(endDate.getDate() + 1) // FullCalendar end dates are exclusive
+      event.end = endDate.toISOString().split('T')[0]
+    } else {
+      // Single-day events need end date set to next day for proper display
+      const endDate = new Date(task.due_date)
+      endDate.setDate(endDate.getDate() + 1)
       event.end = endDate.toISOString().split('T')[0]
     }
 
@@ -179,7 +191,36 @@ export default class extends Controller {
   }
 
   handleEventDidMount(info) {
-    const { plantName, plantVariety, notes, status } = info.event.extendedProps
+    const { plantName, plantVariety, notes, status, taskType } = info.event.extendedProps
+    const isYearView = info.view.type === 'multiMonthYear'
+
+    // Add icon to both month and year views
+    const iconPath = this.getTaskIconPath(taskType)
+    if (iconPath) {
+      const eventContent = info.el.querySelector('.fc-event-title')
+      if (eventContent) {
+        let displayName
+        const iconSize = isYearView ? '16px' : '14px'
+
+        if (isYearView) {
+          // Year view: icon + plant name (or notes for garden tasks)
+          displayName = taskType === 'garden_task' ? (notes || 'Garden task') : (plantName || '')
+        } else {
+          // Month view: icon + task name + plant name
+          const taskName = getTaskDisplayName(taskType)
+          if (taskType === 'garden_task') {
+            displayName = notes || 'Garden task'
+          } else {
+            displayName = plantName ? `${taskName}: ${plantName}` : taskName
+          }
+        }
+
+        eventContent.innerHTML = `<img src="${iconPath}" alt="${taskType}" style="width: ${iconSize}; height: ${iconSize}; margin-right: 4px;"> ${displayName}`
+        eventContent.style.display = 'flex'
+        eventContent.style.alignItems = 'center'
+        eventContent.style.justifyContent = 'flex-start'
+      }
+    }
 
     // Apply visual styling based on status
     if (status === 'done') {
@@ -208,6 +249,17 @@ export default class extends Controller {
       html: true,
       placement: 'top'
     })
+  }
+
+  getTaskIconPath(taskType) {
+    const iconMap = {
+      'plant_seeds': '/images/task-icons/plant_seeds.svg',
+      'begin_hardening_off': '/images/task-icons/begin_hardening_off.svg',
+      'garden_task': '/images/task-icons/garden_task.svg',
+      'plant_seedlings': '/images/task-icons/plant_seedlings.svg'
+    }
+
+    return iconMap[taskType] || null
   }
 
   handleDatesSet(info) {

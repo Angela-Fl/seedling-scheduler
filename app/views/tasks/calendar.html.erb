@@ -1,23 +1,31 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>Task Calendar</h1>
-  <div class="d-flex align-items-center gap-2">
-    <button type="button" class="btn btn-success" onclick="window.dispatchEvent(new CustomEvent('calendar:create', { detail: { date: new Date().toISOString().split('T')[0] } }))">
-      + Create Task
-    </button>
-    <div class="btn-group">
-      <%= link_to "Table", tasks_path, class: "btn btn-outline-primary" %>
-      <%= link_to "Calendar", calendar_tasks_path, class: "btn btn-primary active" %>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h1>Tasks</h1>
+  <small class="text-muted">
+    Last frost date: <%= Setting.frost_date.to_fs(:long) %>
+    <%= link_to "edit", edit_settings_path, class: "ms-2" %>
+  </small>
+</div>
+
+<div class="d-flex justify-content-between align-items-end mb-0">
+  <div class="d-flex gap-2" role="group" aria-label="View toggle">
+    <%= link_to tasks_path, class: "text-decoration-none d-block" do %>
+      <div class="text-center px-4 pt-3 pb-1 bg-light text-muted fw-bold border task-tab task-tab-inactive">
+        Table
+      </div>
+    <% end %>
+    <%= link_to calendar_tasks_path, class: "text-decoration-none d-block" do %>
+      <div class="text-center px-4 py-3 bg-success text-white fw-bold task-tab task-tab-active">
+        Calendar
+      </div>
+    <% end %>
   </div>
+  <button type="button" class="btn btn-new-task text-dark mb-3" onclick="window.dispatchEvent(new CustomEvent('calendar:create', { detail: { date: new Date().toISOString().split('T')[0] } }))">
+    + New Task
+  </button>
 </div>
 
-<div class="alert alert-secondary">
-  <strong>Last frost date:</strong> <%= Setting.frost_date.to_fs(:long) %>
-  <%= link_to "Edit", edit_settings_path, class: "btn btn-sm btn-primary ms-2" %>
-</div>
-
-<div class="card">
-  <div class="card-body">
+<div class="bg-success p-4 task-content-container">
+  <div class="bg-white p-3 rounded">
     <div
       data-controller="calendar"
       data-calendar-tasks-url-value="<%= tasks_path(format: :json) %>"

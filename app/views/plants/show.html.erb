@@ -84,7 +84,7 @@
                       data-task-status-target="row">
 
                     <td>
-                      <div class="d-flex gap-2 align-items-center">
+                      <div class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center task-actions-mobile">
                         <div class="form-check form-check-inline mb-0">
                           <input class="form-check-input"
                                  type="checkbox"
@@ -117,7 +117,8 @@
 
                     <td><%= task.due_date.to_fs(:long) %></td>
                     <td>
-                      <span class="badge" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
+                      <span class="badge d-inline-flex align-items-center" style="background-color: <%= task_badge_color(task)[:bg] %>; color: <%= task_badge_color(task)[:text] %>">
+                        <%= task_icon_tag(task.task_type, size: "14px").html_safe %>
                         <%= task.task_type.humanize %>
                       </span>
                     </td>
@@ -144,7 +145,7 @@
     <% end %>
 
     <%# Action Buttons %>
-    <div class="d-flex gap-2 mb-4">
+    <div class="d-flex flex-column flex-md-row gap-2 mb-4 plant-bottom-actions-mobile">
       <%= link_to "Edit Plant", edit_plant_path(@plant), class: "btn btn-primary" %>
       <%= link_to "Delete Plant", plant_path(@plant),
             class: "btn btn-outline-danger",

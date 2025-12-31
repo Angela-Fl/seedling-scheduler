@@ -186,6 +186,166 @@
   }
 }
 
+/* Actions header - desktop width */
+.tasks-table .actions-header {
+  width: 180px;
+}
+
+/* Mobile Responsive Tables */
+@media (max-width: 767px) {
+  /* Actions header - mobile width */
+  .tasks-table .actions-header {
+    width: auto !important;
+  }
+  /* Task Actions - Stack checkboxes vertically */
+  .task-actions-mobile {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: flex-start !important;
+    white-space: normal !important;
+  }
+
+  /* Plant Actions - Stack buttons vertically */
+  .plant-actions-mobile {
+    flex-direction: column !important;
+  }
+
+  .plant-actions-mobile .btn {
+    width: 100% !important;
+  }
+
+  /* Plants show page - Bottom buttons stack */
+  .plant-bottom-actions-mobile {
+    flex-direction: column !important;
+  }
+
+  .plant-bottom-actions-mobile .btn {
+    width: 100% !important;
+  }
+
+  /* Prevent actions column from forcing horizontal scroll */
+  .table-responsive td:first-child {
+    min-width: auto !important;
+  }
+
+  /* Tasks table - Reorder columns for mobile */
+  .tasks-table thead tr,
+  .tasks-table tbody tr {
+    display: flex !important;
+  }
+
+  /* Reorder columns: Date, Notes, Actions, Task, Plant */
+  /* Date column - first on mobile (nth-child 1) */
+  .tasks-table thead tr th:nth-child(1),
+  .tasks-table tbody tr td:nth-child(1) {
+    order: 1;
+    flex: 0 0 75px;
+    min-width: 75px;
+  }
+
+  /* Notes column - second on mobile (nth-child 4) */
+  .tasks-table thead tr th:nth-child(4),
+  .tasks-table tbody tr td:nth-child(4) {
+    order: 2;
+    flex: 0 0 180px;
+    min-width: 180px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Actions column - third on mobile (nth-child 5) */
+  .tasks-table thead tr th:nth-child(5),
+  .tasks-table tbody tr td:nth-child(5) {
+    order: 3;
+    flex: 0 0 65px;
+    min-width: 65px;
+    max-width: 65px;
+    padding: 0.25rem !important;
+  }
+
+  /* Make checkboxes more compact on mobile */
+  .tasks-table .task-actions-mobile {
+    gap: 0.25rem !important;
+  }
+
+  .tasks-table .form-check {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .tasks-table .form-check-input {
+    margin: 0 !important;
+  }
+
+  .tasks-table .form-check-label {
+    padding-left: 0.25rem !important;
+  }
+
+  /* Task column - fourth on mobile (nth-child 2) */
+  .tasks-table thead tr th:nth-child(2),
+  .tasks-table tbody tr td:nth-child(2) {
+    order: 4;
+    flex: 0 0 auto;
+    min-width: 120px;
+  }
+
+  /* Plant column - fifth on mobile (nth-child 3) */
+  .tasks-table thead tr th:nth-child(3),
+  .tasks-table tbody tr td:nth-child(3) {
+    order: 5;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  /* Stack date ranges vertically on mobile */
+  .task-date-range {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .task-date-start {
+    display: block !important;
+  }
+
+  .task-date-end {
+    display: block !important;
+  }
+}
+
+/* ========================================
+   Task Page Tab Navigation
+   ======================================== */
+
+/* Tab buttons */
+.task-tab {
+  min-width: 120px;
+  border-radius: 8px 8px 0 0;
+}
+
+.task-tab-active {
+  /* Uses Bootstrap bg-success and text-white classes */
+}
+
+.task-tab-inactive {
+  border-bottom: none !important;
+  /* Uses Bootstrap bg-light, text-muted, and border classes */
+}
+
+/* Main content area below tabs */
+.task-content-container {
+  border-radius: 0 8px 8px 8px;
+  margin-top: -4px;
+}
+
+/* New Task button color */
+.btn-new-task {
+  background-color: #82D305;
+}
+
+.btn-new-task:hover {
+  background-color: #6fb304;
+}
+
 /* ========================================
    Task Status Styling
    ======================================== */

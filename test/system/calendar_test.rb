@@ -50,8 +50,8 @@ class CalendarTest < ApplicationSystemTestCase
     # Wait for calendar to render
     sleep 2
 
-    # Click the "+ Create Task" button which triggers calendar:create event
-    click_button "+ Create Task"
+    # Click the "+ New Task" button which triggers calendar:create event
+    click_button "+ New Task"
 
     # Wait for modal to appear
     assert_selector "#taskModal.show", wait: 5
