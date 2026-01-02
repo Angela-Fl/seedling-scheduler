@@ -5,6 +5,8 @@ class UserIsolationTest < ActionDispatch::IntegrationTest
     @user_one = users(:one)
     @user_two = users(:two)
     @password = "password123456"
+    # Clear Rack::Attack cache to prevent rate limiting interference
+    Rack::Attack.cache.store.clear
   end
 
   # =============================================================================
@@ -65,8 +67,6 @@ class UserIsolationTest < ActionDispatch::IntegrationTest
 
   test "creating plant auto-assigns current user" do
     sign_in @user_one
-    # Clear rate limit cache to avoid interference
-    Rack::Attack.cache.store.clear
 
     assert_difference("@user_one.plants.count", 1) do
       assert_difference("@user_two.plants.count", 0) do
@@ -169,16 +169,20 @@ class UserIsolationTest < ActionDispatch::IntegrationTest
 
     plant_one = @user_one.plants.first
 
-    post tasks_path, params: {
-      task: {
-        due_date: Date.today,
-        task_type: "garden_task",
-        plant_id: plant_one.id,
-        status: "pending"
-      }
-    }, as: :json
+    assert_difference("@user_one.tasks.count", 1) do
+      post tasks_path, params: {
+        task: {
+          due_date: Date.today,
+          task_type: "garden_task",
+          plant_id: plant_one.id,
+          status: "pending"
+        }
+      }, as: :json
+    end
 
-    new_task = Task.last
+    # Find the task we just created for this plant
+    new_task = @user_one.tasks.where(plant_id: plant_one.id, task_type: "garden_task").order(created_at: :desc).first
+    assert_not_nil new_task, "Task should have been created"
     assert_equal @user_one.id, new_task.user_id
     assert_equal plant_one.id, new_task.plant_id
   end
