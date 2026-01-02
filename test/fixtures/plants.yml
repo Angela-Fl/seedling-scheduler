@@ -35,3 +35,13 @@ milkweed:
   hardening_offset_days: -14
   plant_seedlings_offset_days: 14
   notes: Needs cold stratification.
+
+tomato:
+  user: two
+  name: Tomato
+  variety: Cherry
+  sowing_method: indoor_start
+  plant_seeds_offset_days: -56
+  hardening_offset_days: -7
+  plant_seedlings_offset_days: 14
+  notes: User two's plant for isolation testing.

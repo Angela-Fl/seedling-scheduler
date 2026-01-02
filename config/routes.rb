@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tasks, only: [ :index, :create, :update ] do
+  resources :tasks, only: [ :index, :create, :update, :destroy ] do
     collection do
       get :calendar
     end

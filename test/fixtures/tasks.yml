@@ -32,3 +32,10 @@ completed_task:
   task_type: plant_seeds
   due_date: 2026-02-24
   status: done
+
+tomato_task:
+  user: two
+  plant: tomato
+  task_type: plant_seeds
+  due_date: 2026-03-15
+  status: pending
