@@ -17,11 +17,11 @@ module PlantsHelper
   def sowing_method_badge(sowing_method)
     colors = case sowing_method
     when "direct_sow"
-      { bg: "#a2cf8f", text: "#000000" }  # Orange
+      { bg: "#a2cf8f", text: "#000000" }  # Light green
     when "indoor_start"
-      { bg: "#e9b38e", text: "#000000" }  # Teal
+      { bg: "#e9b38e", text: "#000000" }  # Peach/coral
     when "outdoor_start"
-      { bg: "#de8ca0", text: "#000000" }  # Purple
+      { bg: "#de8ca0", text: "#000000" }  # Rose/mauve
     when "fridge_stratify"
       { bg: "#6c757d", text: "#ffffff" }  # Gray
     else
