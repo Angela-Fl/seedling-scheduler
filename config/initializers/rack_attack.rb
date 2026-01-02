@@ -65,8 +65,9 @@ class Rack::Attack
   ### Custom Response for Throttled Requests ###
 
   # Return 429 (Too Many Requests) when throttle limit is exceeded
-  self.throttled_responder = lambda do |env|
-    retry_after = (env["rack.attack.match_data"] || {})[:period]
+  self.throttled_responder = lambda do |request|
+    match_data = request.env["rack.attack.match_data"] || {}
+    retry_after = match_data[:period] || 60
     [
       429,
       {

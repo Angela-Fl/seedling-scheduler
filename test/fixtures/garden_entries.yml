@@ -7,7 +7,7 @@ one:
   body: MyText
 
 two:
-  user: one
-  title: Second Garden Entry
+  user: two
+  title: User Two Garden Entry
   entry_date: 2025-12-24
-  body: MyText
+  body: User two's garden notes for isolation testing

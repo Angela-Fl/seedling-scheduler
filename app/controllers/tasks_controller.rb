@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [ :update, :complete, :skip, :reset ]
+  before_action :set_task, only: [ :update, :complete, :skip, :reset, :destroy ]
 
   def index
     @tasks = current_user.tasks
@@ -80,6 +80,13 @@ class TasksController < ApplicationController
   def reset
     @task.update!(status: "pending")
     render json: task_to_json(@task)
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def destroy
+    @task.destroy!
+    head :no_content
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
