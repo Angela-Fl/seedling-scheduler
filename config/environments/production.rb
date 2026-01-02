@@ -87,7 +87,7 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
-    /.*\.fly\.dev$/,  # Allow all *.fly.dev subdomains
+    /.*\.fly\.dev$/  # Allow all *.fly.dev subdomains
     # Add custom domain later:
     # "yourdomain.com",
     # /.*\.yourdomain\.com/
