@@ -68,12 +68,12 @@
                     <span class="d-inline d-md-none"><%= task.due_date.strftime("%b %-d") %> -</span>
                   </span>
                   <span class="task-date-end">
-                    <span class="d-none d-md-inline"><%= task.end_date.to_fs(:long) %></span>
+                    <span class="d-none d-md-inline"><%= task.end_date.strftime("%B %-d, %Y") %></span>
                     <span class="d-inline d-md-none"><%= task.end_date.strftime("%b %-d") %></span>
                   </span>
                 </div>
               <% else %>
-                <span class="d-none d-md-inline"><%= task.due_date.to_fs(:long) %></span>
+                <span class="d-none d-md-inline"><%= task.due_date.strftime("%B %-d, %Y") %></span>
                 <span class="d-inline d-md-none"><%= task.due_date.strftime("%b %-d") %></span>
               <% end %>
             </td>

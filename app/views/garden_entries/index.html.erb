@@ -1,4 +1,4 @@
-<% content_for :title, "Garden entries" %>
+<% content_for :title, "Garden Journal" %>
 
 <div class="container py-4">
 
@@ -7,7 +7,7 @@
   <% end %>
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Garden entries</h1>
+    <h1 class="mb-0">Garden Journal</h1>
 
     <%= link_to "New journal entry",
                 new_garden_entry_path,
@@ -16,18 +16,8 @@
 
   <div id="garden_entries">
     <% @garden_entries.each do |garden_entry| %>
-      <div class="mb-3">
+      <div class="mb-4">
         <%= render garden_entry %>
-
-        <div class="mt-1">
-          <%= link_to "Edit this entry",
-                      edit_garden_entry_path(garden_entry),
-                      class: "btn btn-sm btn-outline-primary" %>
-          <%= link_to "Delete this entry",
-                      garden_entry_path(garden_entry),
-                      class: "btn btn-sm btn-outline-danger",
-                      data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this garden entry?" } %>
-        </div>
       </div>
     <% end %>
   </div>

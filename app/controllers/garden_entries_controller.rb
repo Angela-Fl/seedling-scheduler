@@ -66,6 +66,6 @@ class GardenEntriesController < ApplicationController
 
   # Never permit :user_id from the form
   def garden_entry_params
-    params.require(:garden_entry).permit(:entry_date, :body)
+    params.require(:garden_entry).permit(:title, :entry_date, :body)
   end
 end
