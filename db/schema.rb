@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_25_221602) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_235754) do
   create_table "garden_entries", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
     t.date "entry_date"
+    t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_garden_entries_on_user_id"

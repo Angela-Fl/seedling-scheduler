@@ -14,8 +14,8 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
 
   test "index displays entries in correct order" do
     # Create entries with different dates
-    older_entry = GardenEntry.create!(user: users(:one), entry_date: 1.week.ago, body: "Older entry")
-    newer_entry = GardenEntry.create!(user: users(:one), entry_date: Date.current, body: "Newer entry")
+    older_entry = GardenEntry.create!(user: users(:one), title: "Older Entry", entry_date: 1.week.ago, body: "Older entry")
+    newer_entry = GardenEntry.create!(user: users(:one), title: "Newer Entry", entry_date: Date.current, body: "Newer entry")
 
     get garden_entries_url
     assert_response :success
@@ -33,14 +33,14 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
   # Create tests
   test "should create garden_entry" do
     assert_difference("GardenEntry.count") do
-      post garden_entries_url, params: { garden_entry: { body: "Test entry body", entry_date: Date.current } }
+      post garden_entries_url, params: { garden_entry: { title: "Test Title", body: "Test entry body", entry_date: Date.current } }
     end
 
     assert_redirected_to garden_entries_url
   end
 
   test "should create garden_entry and show success notice" do
-    post garden_entries_url, params: { garden_entry: { body: "Test entry", entry_date: Date.current } }
+    post garden_entries_url, params: { garden_entry: { title: "Test Title", body: "Test entry", entry_date: Date.current } }
 
     assert_redirected_to garden_entries_url
     follow_redirect!
@@ -49,7 +49,7 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create garden_entry with blank body" do
     assert_no_difference("GardenEntry.count") do
-      post garden_entries_url, params: { garden_entry: { body: "", entry_date: Date.current } }
+      post garden_entries_url, params: { garden_entry: { title: "Valid Title", body: "", entry_date: Date.current } }
     end
 
     assert_response :unprocessable_entity
@@ -57,7 +57,15 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create garden_entry without entry_date" do
     assert_no_difference("GardenEntry.count") do
-      post garden_entries_url, params: { garden_entry: { body: "Test body", entry_date: nil } }
+      post garden_entries_url, params: { garden_entry: { title: "Valid Title", body: "Test body", entry_date: nil } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should not create garden_entry without title" do
+    assert_no_difference("GardenEntry.count") do
+      post garden_entries_url, params: { garden_entry: { title: "", body: "Test body", entry_date: Date.current } }
     end
 
     assert_response :unprocessable_entity
@@ -78,7 +86,7 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
   # Update tests
   test "should update garden_entry" do
     new_body = "Updated garden entry body"
-    patch garden_entry_url(@garden_entry), params: { garden_entry: { body: new_body, entry_date: @garden_entry.entry_date } }
+    patch garden_entry_url(@garden_entry), params: { garden_entry: { title: @garden_entry.title, body: new_body, entry_date: @garden_entry.entry_date } }
 
     assert_redirected_to garden_entries_url
 
@@ -87,7 +95,7 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update garden_entry and show success notice" do
-    patch garden_entry_url(@garden_entry), params: { garden_entry: { body: "Updated", entry_date: @garden_entry.entry_date } }
+    patch garden_entry_url(@garden_entry), params: { garden_entry: { title: @garden_entry.title, body: "Updated", entry_date: @garden_entry.entry_date } }
 
     assert_redirected_to garden_entries_url
     follow_redirect!
@@ -96,7 +104,7 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
 
   test "should not update garden_entry with blank body" do
     original_body = @garden_entry.body
-    patch garden_entry_url(@garden_entry), params: { garden_entry: { body: "", entry_date: @garden_entry.entry_date } }
+    patch garden_entry_url(@garden_entry), params: { garden_entry: { title: @garden_entry.title, body: "", entry_date: @garden_entry.entry_date } }
 
     assert_response :unprocessable_entity
 
@@ -104,9 +112,19 @@ class GardenEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal original_body, @garden_entry.body
   end
 
+  test "should not update garden_entry with blank title" do
+    original_title = @garden_entry.title
+    patch garden_entry_url(@garden_entry), params: { garden_entry: { title: "", body: @garden_entry.body, entry_date: @garden_entry.entry_date } }
+
+    assert_response :unprocessable_entity
+
+    @garden_entry.reload
+    assert_equal original_title, @garden_entry.title
+  end
+
   test "should update entry_date" do
     new_date = 1.week.from_now.to_date
-    patch garden_entry_url(@garden_entry), params: { garden_entry: { body: @garden_entry.body, entry_date: new_date } }
+    patch garden_entry_url(@garden_entry), params: { garden_entry: { title: @garden_entry.title, body: @garden_entry.body, entry_date: new_date } }
 
     assert_redirected_to garden_entries_url
 

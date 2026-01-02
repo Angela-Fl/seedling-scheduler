@@ -2,10 +2,12 @@
 
 one:
   user: one
+  title: First Garden Entry
   entry_date: 2025-12-24
   body: MyText
 
 two:
   user: one
+  title: Second Garden Entry
   entry_date: 2025-12-24
   body: MyText

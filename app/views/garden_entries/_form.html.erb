@@ -12,13 +12,18 @@
   <% end %>
 
   <div>
+    <%= form.label :title, style: "display: block" %>
+    <%= form.text_field :title, class: "form-control" %>
+  </div>
+
+  <div>
     <%= form.label :entry_date, style: "display: block" %>
     <%= form.date_field :entry_date, value: (form.object.entry_date || Date.current), class: "form-control" %>
   </div>
 
   <div>
     <%= form.label :body, style: "display: block" %>
-    <%= form.textarea :body, rows: 8, class: "from-control" %>
+    <%= form.textarea :body, rows: 8, class: "form-control", style: "width: 100%; max-width: 100%;" %>
   </div>
 
   <div>
