@@ -1,6 +1,9 @@
 require "test_helper"
 
 class RateLimitingTest < ActionDispatch::IntegrationTest
+  # Disable parallel execution for rate limiting tests to avoid cache conflicts
+  parallelize(workers: 1)
+
   setup do
     @user = users(:one)
     @password = "password123456"
