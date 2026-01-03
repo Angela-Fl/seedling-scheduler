@@ -14,7 +14,7 @@ console_command = '/rails/bin/rails console'
   release_command = './bin/rails db:migrate'
 
 [http_service]
-  internal_port = 80
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
@@ -50,3 +50,5 @@ console_command = '/rails/bin/rails console'
 [env]
   RAILS_ENV = 'production'
   SOLID_QUEUE_IN_PUMA = 'true'
+  PORT = '8080'
+  HTTP_PORT = '8080'
