@@ -7,9 +7,6 @@ app = 'seedling-scheduler-angie'
 primary_region = 'ord'
 console_command = '/rails/bin/rails console'
 
-[build]
-  dockerfile = "Dockerfile"
-
 [deploy]
   release_command = './bin/rails db:prepare'
 
