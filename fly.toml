@@ -3,9 +3,12 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'seedling-scheduler-angie'
+app = 'seedling-scheduler'
 primary_region = 'ord'
 console_command = '/rails/bin/rails console'
+
+[build]
+  dockerfile = "Dockerfile"
 
 [deploy]
   release_command = './bin/rails db:prepare'
