@@ -13,17 +13,12 @@ console_command = '/rails/bin/rails console'
 [deploy]
   release_command = './bin/rails db:migrate'
 
-[processes]
-  app = ""
-  worker = "bundle exec solid_queue:start"
-
 [http_service]
   internal_port = 80
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ['app']
 
   [http_service.concurrency]
     type = "requests"
