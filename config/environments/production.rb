@@ -60,16 +60,19 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
 
-  # Set host to be used by links generated in mailer templates.
-  # For Fly.io: Uses FLY_APP_NAME environment variable
-  # For custom domain: Update to your actual domain (e.g., "yourdomain.com")
+  # Set default from address for all emails
+  config.action_mailer.default_options = {
+    from: "noreply@seedlingscheduler.com"
+  }
+
+  # Set host to be used by links generated in mailer templates
   config.action_mailer.default_url_options = {
-    host: ENV.fetch("FLY_APP_NAME", "seedling-scheduler") + ".fly.dev",
+    host: "seedlingscheduler.com",
     protocol: "https"
   }
 
-  # Specify outgoing SMTP server. Add smtp/* credentials via: bin/rails credentials:edit
-  # Required credentials: smtp.user_name, smtp.password, smtp.address, smtp.port
+  # Mailjet SMTP configuration
+  # Credentials stored in: bin/rails credentials:edit --environment production
   config.action_mailer.smtp_settings = {
     user_name: Rails.application.credentials.dig(:smtp, :user_name),
     password: Rails.application.credentials.dig(:smtp, :password),
@@ -77,7 +80,7 @@ Rails.application.configure do
     port: Rails.application.credentials.dig(:smtp, :port),
     authentication: :plain,
     enable_starttls_auto: true,
-    domain: ENV.fetch("FLY_APP_NAME", "seedling-scheduler") + ".fly.dev"
+    domain: "seedlingscheduler.com"
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
@@ -92,10 +95,9 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
-    /.*\.fly\.dev$/  # Allow all *.fly.dev subdomains
-    # Add custom domain later:
-    # "yourdomain.com",
-    # /.*\.yourdomain\.com/
+    /.*\.fly\.dev$/,           # Allow all *.fly.dev subdomains
+    "seedlingscheduler.com",   # Custom domain
+    /.*\.seedlingscheduler\.com$/  # Subdomains of seedlingscheduler.com
   ]
 
   # Skip DNS rebinding protection for the default health check endpoint.
