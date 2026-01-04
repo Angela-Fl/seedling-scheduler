@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "from@example.com"
+  default from: "noreply@#{ENV.fetch('FLY_APP_NAME', 'seedling-scheduler')}.fly.dev"
   layout "mailer"
 end

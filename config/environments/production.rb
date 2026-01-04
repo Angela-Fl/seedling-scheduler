@@ -53,15 +53,19 @@ Rails.application.configure do
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Enable delivery error reporting for debugging email issues in production
+  config.action_mailer.raise_delivery_errors = true
+
+  # Configure email delivery method
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
 
   # Set host to be used by links generated in mailer templates.
   # For Fly.io: Uses FLY_APP_NAME environment variable
   # For custom domain: Update to your actual domain (e.g., "yourdomain.com")
   config.action_mailer.default_url_options = {
-    host: ENV.fetch("FLY_APP_NAME", "seedling-scheduler") + ".fly.dev"
+    host: ENV.fetch("FLY_APP_NAME", "seedling-scheduler") + ".fly.dev",
+    protocol: "https"
   }
 
   # Specify outgoing SMTP server. Add smtp/* credentials via: bin/rails credentials:edit
@@ -72,7 +76,8 @@ Rails.application.configure do
     address: Rails.application.credentials.dig(:smtp, :address),
     port: Rails.application.credentials.dig(:smtp, :port),
     authentication: :plain,
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
+    domain: ENV.fetch("FLY_APP_NAME", "seedling-scheduler") + ".fly.dev"
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
