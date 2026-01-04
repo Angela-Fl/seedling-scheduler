@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   resources :garden_entries
   root "tasks#index"
 
+  get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["OK"]] }
+
   resource :settings, only: [ :edit, :update ]
 
   resources :plants do
