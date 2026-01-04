@@ -59,7 +59,9 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    assert_redirected_to root_path
+    assert_redirected_to new_user_session_path
+    follow_redirect!
+    assert_select "div.alert", text: /confirmation link has been sent/i
   end
 
   test "sign up fails with password too short" do
