@@ -71,7 +71,7 @@
   <% if user_signed_in? %>
     <div class="text-center">
       <p class="text-muted">Have questions or feedback?</p>
-      <%= link_to "Share Your Feedback", feedback_path, class: "btn btn-outline-secondary" %>
+      <%= link_to "Share Your Feedback", new_feedback_submission_path(from: request.fullpath), class: "btn btn-outline-secondary" %>
     </div>
   <% else %>
     <div class="text-center">

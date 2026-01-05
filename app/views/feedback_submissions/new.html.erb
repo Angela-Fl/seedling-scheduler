@@ -1,0 +1,75 @@
+<% content_for :title, "Submit Feedback" %>
+
+<div class="container py-4">
+  <h1 class="mb-4">Submit Feedback</h1>
+
+  <p class="lead">
+    We value your input! Help us improve Seedling Scheduler by sharing your thoughts.
+  </p>
+
+  <%= form_with(model: @feedback_submission, url: feedback_submissions_path, local: true) do |form| %>
+    <% if @feedback_submission.errors.any? %>
+      <div class="alert alert-danger">
+        <h4><%= pluralize(@feedback_submission.errors.count, "error") %> prevented this feedback from being saved:</h4>
+        <ul class="mb-0">
+          <% @feedback_submission.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Hidden field: page (auto-captured) -->
+    <%= form.hidden_field :page, value: @from_page %>
+
+    <div class="mb-3">
+      <%= form.label :category, "Category", class: "form-label" %>
+      <%= form.select :category,
+                      FeedbackSubmission::CATEGORIES,
+                      { prompt: "Select a category..." },
+                      { class: "form-select", required: true } %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :message, "Your Feedback", class: "form-label" %>
+      <%= form.text_area :message,
+                         rows: 6,
+                         class: "form-control",
+                         placeholder: "Please describe your feedback in detail...",
+                         required: true %>
+      <div class="form-text">Minimum 10 characters</div>
+    </div>
+
+    <div class="mb-3" data-controller="toggle">
+      <%= form.hidden_field :wants_reply, value: "false", data: { toggle_target: "hiddenField" } %>
+
+      <div class="form-check d-flex align-items-center">
+        <input class="form-check-input me-1 mt-0"
+               type="checkbox"
+               id="replyCheckbox"
+               data-action="change->toggle#toggle"
+               data-toggle-target="checkbox">
+        <label class="form-check-label mb-0" for="replyCheckbox" style="font-weight: normal; font-size: 1rem; cursor: pointer;">
+          I'd like a reply
+        </label>
+      </div>
+
+      <div class="mt-3" data-toggle-target="content" style="display: none;">
+        <%= form.label :email, "Contact Email", class: "form-label" %>
+        <%= form.email_field :email,
+                             class: "form-control",
+                             placeholder: current_user.email,
+                             value: current_user.email %>
+        <div class="form-text">
+          We'll use your account email (<%= current_user.email %>) by default.
+          Override only if you prefer replies at a different address.
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <%= form.submit "Submit Feedback", class: "btn btn-primary" %>
+      <%= link_to "Cancel", :back, class: "btn btn-outline-secondary" %>
+    </div>
+  <% end %>
+</div>

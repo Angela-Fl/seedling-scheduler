@@ -5,8 +5,4 @@ class PagesController < ApplicationController
   def getting_started
     # Public page - no authentication required
   end
-
-  def feedback
-    # Requires authentication (default behavior)
-  end
 end
