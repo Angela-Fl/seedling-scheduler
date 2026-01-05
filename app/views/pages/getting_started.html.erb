@@ -1,0 +1,85 @@
+<div class="container mt-5">
+  <h1 class="mb-4">Getting Started</h1>
+
+  <p class="lead">
+    Seedling Scheduler helps you plan planting tasks around your local frost date.
+    You can get useful results in just a few minutes 🌱
+  </p>
+
+  <hr>
+
+  <h2 class="mt-4 mb-4">Quick Start</h2>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-3 border-primary">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span class="badge me-2" style="background-color: #FFCBE1; color: #000000;">1</span>
+            Set your last frost date
+          </h5>
+          <p class="card-text ms-4">
+            This anchors your entire schedule. All planting tasks are calculated relative to it.
+          </p>
+          <%= link_to "Go to Settings →", edit_settings_path, class: "btn btn-sm ms-4", style: "background-color: #FFCBE1; color: #000000; font-weight: bold;" %>
+        </div>
+      </div>
+
+      <div class="card mb-3 border-primary">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span class="badge me-2" style="background-color: #F9E1A8; color: #000000;">2</span>
+            Add plants to your garden
+          </h5>
+          <p class="card-text ms-4">
+            Choose how each plant is started (direct sow, indoor start, etc.).
+          </p>
+          <%= link_to "Add Plants →", new_plant_path, class: "btn btn-sm ms-4", style: "background-color: #F9E1A8; color: #000000; font-weight: bold;" %>
+        </div>
+      </div>
+
+      <div class="card mb-3 border-primary">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span class="badge me-2" style="background-color: #D6E5BD; color: #000000;">3</span>
+            View your task list
+          </h5>
+          <p class="card-text ms-4">
+            Tasks are generated automatically based on your plants and frost date.
+          </p>
+          <%= link_to "View Tasks →", tasks_path, class: "btn btn-sm ms-4", style: "background-color: #D6E5BD; color: #000000; font-weight: bold;" %>
+        </div>
+      </div>
+
+      <div class="card mb-3 border-primary">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span class="badge me-2" style="background-color: #C9E4F5; color: #000000;">4</span>
+            Check the calendar view
+          </h5>
+          <p class="card-text ms-4">
+            See your planting timeline visually and adjust as needed.
+          </p>
+          <%= link_to "View Calendar →", calendar_tasks_path, class: "btn btn-sm ms-4", style: "background-color: #C9E4F5; color: #000000; font-weight: bold;" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <% if user_signed_in? %>
+    <div class="text-center">
+      <p class="text-muted">Have questions or feedback?</p>
+      <%= link_to "Share Your Feedback", feedback_path, class: "btn btn-outline-secondary" %>
+    </div>
+  <% else %>
+    <div class="text-center">
+      <p class="text-muted">Ready to get started?</p>
+      <%= link_to "Sign Up Now", new_user_registration_path, class: "btn btn-success" %>
+      <p class="mt-2">
+        <small>Already have an account? <%= link_to "Log in", new_user_session_path %></small>
+      </p>
+    </div>
+  <% end %>
+</div>

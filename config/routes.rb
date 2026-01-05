@@ -7,6 +7,10 @@ Rails.application.routes.draw do
 
   resource :settings, only: [ :edit, :update ]
 
+  # Static pages
+  get "getting-started", to: "pages#getting_started", as: :getting_started
+  get "feedback", to: "pages#feedback", as: :feedback
+
   resources :plants do
     member do
       post :regenerate_tasks

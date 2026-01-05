@@ -15,7 +15,7 @@ class Rack::Attack
   throttle("logins/email", limit: 5, period: 20.seconds) do |req|
     if req.path == "/users/sign_in" && req.post?
       # Normalize the email to prevent case variations from bypassing throttle
-      req.params["user"]&.dig("email")&.to_s&.downcase&.presence
+      ActionDispatch::Request.new(req.env).params.dig("user", "email")&.to_s&.downcase&.presence
     end
   end
 
@@ -24,7 +24,7 @@ class Rack::Attack
   # Limit password reset requests to 3 per 5 minutes per email
   throttle("password_resets/email", limit: 3, period: 5.minutes) do |req|
     if req.path == "/users/password" && req.post?
-      req.params["user"]&.dig("email")&.to_s&.downcase&.presence
+      ActionDispatch::Request.new(req.env).params.dig("user", "email")&.to_s&.downcase&.presence
     end
   end
 
@@ -42,7 +42,7 @@ class Rack::Attack
   # Limit unlock requests to 3 per 5 minutes per email
   throttle("unlocks/email", limit: 3, period: 5.minutes) do |req|
     if req.path == "/users/unlock" && req.post?
-      req.params["user"]&.dig("email")&.to_s&.downcase&.presence
+      ActionDispatch::Request.new(req.env).params.dig("user", "email")&.to_s&.downcase&.presence
     end
   end
 
@@ -51,7 +51,7 @@ class Rack::Attack
   # Limit confirmation email resends to 3 per 5 minutes per email
   throttle("confirmations/email", limit: 3, period: 5.minutes) do |req|
     if req.path == "/users/confirmation" && req.post?
-      req.params["user"]&.dig("email")&.to_s&.downcase&.presence
+      ActionDispatch::Request.new(req.env).params.dig("user", "email")&.to_s&.downcase&.presence
     end
   end
 
