@@ -10,6 +10,11 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # Clear Rack::Attack cache before each test to prevent rate limiting interference
+    setup do
+      Rack::Attack.cache.store.clear
+    end
+
     # Add more helper methods to be used by all tests here...
   end
 end
