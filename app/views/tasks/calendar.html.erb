@@ -29,6 +29,7 @@
     <div
       data-controller="calendar"
       data-calendar-tasks-url-value="<%= tasks_path(format: :json) %>"
+      data-calendar-frost-date-value="<%= Setting.frost_date.iso8601 %>"
     >
       <div data-calendar-target="calendar"></div>
     </div>
