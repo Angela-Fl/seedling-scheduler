@@ -8,7 +8,8 @@ import { getTaskColor, getTaskDisplayName } from '../lib/task_colors'
 
 export default class extends Controller {
   static values = {
-    tasksUrl: String
+    tasksUrl: String,
+    frostDate: String
   }
   static targets = ["calendar"]
 
@@ -35,6 +36,7 @@ export default class extends Controller {
       eventClick: this.handleEventClick.bind(this),
       eventDrop: this.handleEventDrop.bind(this),
       eventDidMount: this.handleEventDidMount.bind(this),
+      dayCellDidMount: this.handleDayCellDidMount.bind(this),
       datesSet: this.handleDatesSet.bind(this)
     })
 
@@ -71,6 +73,10 @@ export default class extends Controller {
       const tasks = await response.json()
 
       this.calendar.removeAllEvents()
+
+      // Add frost date events first (background layer)
+      this.createFrostDateEvents().forEach(event => this.calendar.addEvent(event))
+
       tasks.forEach(task => this.calendar.addEvent(this.formatEvent(task)))
     } catch (error) {
       console.error('Failed to load tasks:', error)
@@ -148,6 +154,25 @@ export default class extends Controller {
     return event
   }
 
+  createFrostDateEvents() {
+    if (!this.hasFrostDateValue) return []
+
+    const frostDate = this.frostDateValue
+
+    return [
+      // Background event (shading only, label added via dayCellDidMount)
+      {
+        id: 'frost-date-marker',
+        start: frostDate,
+        display: 'background',
+        classNames: ['frost-date-event'],
+        extendedProps: {
+          isFrostDate: true
+        }
+      }
+    ]
+  }
+
   handleDateClick(info) {
     window.dispatchEvent(new CustomEvent('calendar:create', {
       detail: { date: info.dateStr }
@@ -155,6 +180,9 @@ export default class extends Controller {
   }
 
   handleEventClick(info) {
+    // Skip frost date marker - it's not clickable
+    if (info.event.extendedProps.isFrostDate) return
+
     const { plantId } = info.event.extendedProps
 
     // If this is a plant task, navigate to the plant's page
@@ -172,6 +200,12 @@ export default class extends Controller {
   }
 
   async handleEventDrop(info) {
+    // Prevent dragging frost date marker
+    if (info.event.extendedProps.isFrostDate) {
+      info.revert()
+      return
+    }
+
     try {
       const response = await fetch(`/tasks/${info.event.id}`, {
         method: 'PATCH',
@@ -264,6 +298,27 @@ export default class extends Controller {
 
   handleDatesSet(info) {
     this.loadTasks(info.start, info.end)
+  }
+
+  handleDayCellDidMount(arg) {
+    if (!this.hasFrostDateValue) return
+
+    // Convert arg.date to YYYY-MM-DD string
+    const y = arg.date.getFullYear()
+    const m = String(arg.date.getMonth() + 1).padStart(2, '0')
+    const d = String(arg.date.getDate()).padStart(2, '0')
+    const cellDateStr = `${y}-${m}-${d}`
+
+    if (cellDateStr !== this.frostDateValue) return
+
+    // Create label element
+    const tag = document.createElement('div')
+    tag.className = 'frost-date-tag'
+    tag.textContent = 'Last Frost Date'
+
+    // Inject into day cell frame (foreground layer)
+    const frame = arg.el.querySelector('.fc-daygrid-day-frame')
+    ;(frame || arg.el).appendChild(tag)
   }
 
   showNotification(message, type) {

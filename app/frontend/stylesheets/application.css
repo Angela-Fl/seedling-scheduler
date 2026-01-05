@@ -186,6 +186,43 @@
   }
 }
 
+/* ========================================
+   Frost Date Marker
+   ======================================== */
+
+/* Frost date background event - just for shading/border */
+.fc .frost-date-event {
+  background-color: rgba(178, 223, 219, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(128, 203, 196, 0.8);
+  pointer-events: none;
+}
+
+/* Ensure day cells can position absolute children */
+.fc .fc-daygrid-day-frame {
+  position: relative;
+}
+
+/* Frost date label injected via dayCellDidMount */
+.fc .frost-date-tag {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #111;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 4px;
+  border-radius: 4px;
+  z-index: 6;
+  pointer-events: none;
+  line-height: 1.2;
+}
+
+/* Year view adjustments - make more compact */
+.fc-multimonth-view .frost-date-tag {
+  font-size: 0.6rem;
+}
+
 /* Actions header - desktop width */
 .tasks-table .actions-header {
   width: 180px;
