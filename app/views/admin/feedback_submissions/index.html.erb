@@ -1,0 +1,72 @@
+<% content_for :title, "Feedback Admin" %>
+
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Feedback Submissions</h1>
+    <div class="btn-group" role="group">
+      <%= link_to "All", admin_feedback_submissions_path,
+                  class: "btn btn-sm #{params[:status].blank? ? 'btn-primary' : 'btn-outline-primary'}" %>
+      <%= link_to "New", admin_feedback_submissions_path(status: "new"),
+                  class: "btn btn-sm #{params[:status] == 'new' ? 'btn-primary' : 'btn-outline-primary'}" %>
+      <%= link_to "Reviewed", admin_feedback_submissions_path(status: "reviewed"),
+                  class: "btn btn-sm #{params[:status] == 'reviewed' ? 'btn-primary' : 'btn-outline-primary'}" %>
+      <%= link_to "Done", admin_feedback_submissions_path(status: "done"),
+                  class: "btn btn-sm #{params[:status] == 'done' ? 'btn-primary' : 'btn-outline-primary'}" %>
+    </div>
+  </div>
+
+  <% if @feedback_submissions.any? %>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Date/Time</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Message</th>
+            <th>Page</th>
+            <th>User</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @feedback_submissions.each do |feedback| %>
+            <tr style="cursor: pointer;" onclick="window.location='<%= admin_feedback_submission_path(feedback) %>'">
+              <td>
+                <%= feedback.created_at.strftime("%Y-%m-%d %H:%M") %>
+              </td>
+              <td>
+                <span class="badge bg-<%= status_badge_class(feedback.status) %>">
+                  <%= feedback.status %>
+                </span>
+              </td>
+              <td><%= feedback.category %></td>
+              <td><%= feedback.message_preview(80) %></td>
+              <td>
+                <% if feedback.page.present? %>
+                  <code><%= feedback.page %></code>
+                <% else %>
+                  <span class="text-muted">—</span>
+                <% end %>
+              </td>
+              <td>
+                <%= feedback.user.email %><br>
+                <% if feedback.email.present? && feedback.email != feedback.user.email %>
+                  <small class="text-muted">Reply to: <%= feedback.email %></small>
+                <% end %>
+              </td>
+              <td>
+                <%= link_to "View", admin_feedback_submission_path(feedback),
+                            class: "btn btn-sm btn-outline-primary" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      No feedback submissions found.
+    </div>
+  <% end %>
+</div>

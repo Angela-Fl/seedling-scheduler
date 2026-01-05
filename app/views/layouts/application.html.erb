@@ -62,11 +62,25 @@
             <li class="nav-item">
               <%= link_to "Settings", edit_settings_path, class: "nav-link #{current_page?(edit_settings_path) ? 'active' : ''}" %>
             </li>
+            <%# Feedback link - only for logged-in users %>
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <%= link_to "Feedback",
+                            new_feedback_submission_path(from: request.fullpath),
+                            class: "nav-link #{current_page?(new_feedback_submission_path) ? 'active' : ''}" %>
+              </li>
+            <% end %>
           </ul>
 
           <%# Authentication links on the right %>
           <ul class="navbar-nav ms-auto">
             <% if user_signed_in? %>
+              <%# Admin link - only for admins %>
+              <% if current_user.admin? %>
+                <li class="nav-item">
+                  <%= link_to "Admin", admin_feedback_submissions_path, class: "nav-link text-warning" %>
+                </li>
+              <% end %>
               <li class="nav-item">
                 <span class="navbar-text text-white me-3">
                   <%= current_user.email %>

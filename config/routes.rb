@@ -9,7 +9,18 @@ Rails.application.routes.draw do
 
   # Static pages
   get "getting-started", to: "pages#getting_started", as: :getting_started
-  get "feedback", to: "pages#feedback", as: :feedback
+
+  # User feedback submission
+  resources :feedback_submissions, only: [:new, :create]
+
+  # Admin namespace
+  namespace :admin do
+    resources :feedback_submissions, only: [:index, :show] do
+      member do
+        patch :update_status
+      end
+    end
+  end
 
   resources :plants do
     member do

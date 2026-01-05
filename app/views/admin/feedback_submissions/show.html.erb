@@ -1,0 +1,76 @@
+<% content_for :title, "Feedback ##{@feedback_submission.id}" %>
+
+<div class="container py-4">
+  <%= link_to "← Back to Feedback", admin_feedback_submissions_path, class: "btn btn-link mb-3" %>
+
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">Feedback #<%= @feedback_submission.id %></h2>
+      <span class="badge bg-<%= status_badge_class(@feedback_submission.status) %> fs-6">
+        <%= @feedback_submission.status %>
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>Submitted:</strong>
+          <%= @feedback_submission.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+        </div>
+        <div class="col-md-6">
+          <strong>Category:</strong>
+          <span class="badge bg-secondary"><%= @feedback_submission.category %></span>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <strong>User:</strong>
+          <%= @feedback_submission.user.email %>
+        </div>
+        <div class="col-md-6">
+          <strong>Contact Email:</strong>
+          <%= @feedback_submission.email.presence || @feedback_submission.user.email %>
+        </div>
+      </div>
+
+      <% if @feedback_submission.page.present? %>
+        <div class="mb-3">
+          <strong>Page:</strong>
+          <code><%= @feedback_submission.page %></code>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <strong>Message:</strong>
+        <div class="mt-2 p-3 bg-light rounded">
+          <%= simple_format(@feedback_submission.message) %>
+        </div>
+      </div>
+
+      <% if @feedback_submission.user_agent.present? %>
+        <div class="mb-3">
+          <strong>User Agent:</strong>
+          <small class="text-muted d-block mt-1">
+            <%= @feedback_submission.user_agent %>
+          </small>
+        </div>
+      <% end %>
+
+      <hr class="my-4">
+
+      <div class="mb-3">
+        <strong>Update Status:</strong>
+        <div class="btn-group mt-2" role="group">
+          <% FeedbackSubmission::STATUSES.each do |status| %>
+            <%= button_to status.titleize,
+                          update_status_admin_feedback_submission_path(@feedback_submission, status: status),
+                          method: :patch,
+                          class: "btn btn-sm #{@feedback_submission.status == status ? 'btn-primary' : 'btn-outline-primary'}",
+                          form: { data: { turbo_confirm: "Change status to #{status}?" } } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
