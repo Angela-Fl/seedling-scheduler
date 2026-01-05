@@ -24,9 +24,7 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  # For fly.io deployment, using noreply@[appname].fly.dev
-  # Update to custom domain when available (e.g., "noreply@yourdomain.com")
-  config.mailer_sender = "noreply@#{ENV.fetch('FLY_APP_NAME', 'seedling-scheduler')}.fly.dev"
+  config.mailer_sender = "noreply@seedlingscheduler.com"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
