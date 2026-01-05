@@ -11,11 +11,11 @@ Rails.application.routes.draw do
   get "getting-started", to: "pages#getting_started", as: :getting_started
 
   # User feedback submission
-  resources :feedback_submissions, only: [:new, :create]
+  resources :feedback_submissions, only: [ :new, :create ]
 
   # Admin namespace
   namespace :admin do
-    resources :feedback_submissions, only: [:index, :show] do
+    resources :feedback_submissions, only: [ :index, :show, :destroy ] do
       member do
         patch :update_status
       end

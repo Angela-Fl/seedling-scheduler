@@ -1,0 +1,32 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  category: "Bug"
+  message: "This is a test feedback message that is long enough to pass validation."
+  page: "/tasks"
+  email: "user1@example.com"
+  user_agent: "Mozilla/5.0"
+  status: "new"
+  wants_reply: true
+  created_at: <%= 1.day.ago %>
+
+two:
+  user: two
+  category: "Feature request"
+  message: "Another feedback message for testing purposes with sufficient length."
+  page: "/plants"
+  email: ""
+  user_agent: "Chrome/90.0"
+  status: "reviewed"
+  wants_reply: false
+  created_at: <%= 2.days.ago %>
+
+three:
+  user: one
+  category: "Performance"
+  message: "Third feedback for testing filtering and sorting functionality."
+  page: "/calendar"
+  status: "done"
+  wants_reply: false
+  created_at: <%= 3.days.ago %>

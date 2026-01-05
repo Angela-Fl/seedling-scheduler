@@ -11,7 +11,7 @@ class User < ApplicationRecord
 
   def admin?
     return false if email.blank?
-    admin_emails = ENV['ADMIN_EMAILS'].to_s.split(',').map(&:strip)
+    admin_emails = ENV["ADMIN_EMAILS"].to_s.split(",").map(&:strip)
     return false if admin_emails.empty?
     admin_emails.include?(email)
   end

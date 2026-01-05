@@ -26,6 +26,7 @@
             <th>Message</th>
             <th>Page</th>
             <th>User</th>
+            <th>Wants Reply</th>
             <th></th>
           </tr>
         </thead>
@@ -56,8 +57,22 @@
                 <% end %>
               </td>
               <td>
-                <%= link_to "View", admin_feedback_submission_path(feedback),
-                            class: "btn btn-sm btn-outline-primary" %>
+                <% if feedback.wants_reply %>
+                  <span class="badge bg-success">Yes</span>
+                <% else %>
+                  <span class="badge bg-secondary">No</span>
+                <% end %>
+              </td>
+              <td onclick="event.stopPropagation();">
+                <div class="d-flex gap-1">
+                  <%= link_to "View", admin_feedback_submission_path(feedback),
+                              class: "btn btn-sm btn-outline-primary" %>
+                  <%= button_to "Delete",
+                                admin_feedback_submission_path(feedback),
+                                method: :delete,
+                                class: "btn btn-sm btn-outline-danger",
+                                form: { data: { turbo_confirm: "Delete this feedback?" } } %>
+                </div>
               </td>
             </tr>
           <% end %>

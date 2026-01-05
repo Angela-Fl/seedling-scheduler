@@ -1,7 +1,7 @@
 module Admin
   class FeedbackSubmissionsController < ApplicationController
     before_action :require_admin!
-    before_action :set_feedback_submission, only: [:show, :update_status]
+    before_action :set_feedback_submission, only: [ :show, :update_status, :destroy ]
 
     def index
       @feedback_submissions = FeedbackSubmission
@@ -21,6 +21,13 @@ module Admin
         redirect_to admin_feedback_submission_path(@feedback_submission),
                     alert: "Failed to update status"
       end
+    end
+
+    def destroy
+      @feedback_submission.destroy!
+      redirect_to admin_feedback_submissions_path, notice: "Feedback submission deleted successfully."
+    rescue => e
+      redirect_to admin_feedback_submissions_path, alert: "Failed to delete feedback submission: #{e.message}"
     end
 
     private

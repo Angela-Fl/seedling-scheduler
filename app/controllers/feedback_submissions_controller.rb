@@ -21,6 +21,6 @@ class FeedbackSubmissionsController < ApplicationController
 
   def feedback_params
     # NOTE: We intentionally do NOT permit :user_id, :status, :page, or :user_agent
-    params.require(:feedback_submission).permit(:category, :message, :email)
+    params.require(:feedback_submission).permit(:category, :message, :email, :wants_reply)
   end
 end

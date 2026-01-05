@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_055511) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_175906) do
   create_table "feedback_submissions", force: :cascade do |t|
     t.string "category", null: false
     t.datetime "created_at", null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_055511) do
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.integer "user_id", null: false
+    t.boolean "wants_reply", default: false, null: false
     t.index ["created_at"], name: "index_feedback_submissions_on_created_at"
     t.index ["status"], name: "index_feedback_submissions_on_status"
     t.index ["user_id"], name: "index_feedback_submissions_on_user_id"

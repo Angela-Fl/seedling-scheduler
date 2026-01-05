@@ -1,8 +1,8 @@
 class FeedbackSubmission < ApplicationRecord
   belongs_to :user
 
-  CATEGORIES = ["Bug", "Confusing/UX", "Feature request", "Performance", "Other"].freeze
-  STATUSES = ["new", "reviewed", "done"].freeze
+  CATEGORIES = [ "Bug", "Confusing/UX", "Feature request", "Performance", "Other" ].freeze
+  STATUSES = [ "new", "reviewed", "done" ].freeze
 
   validates :category, presence: true, inclusion: { in: CATEGORIES }
   validates :message, presence: true, length: { minimum: 10, maximum: 5000 }
