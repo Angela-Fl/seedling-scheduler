@@ -76,8 +76,11 @@
   <% else %>
     <div class="text-center">
       <p class="text-muted">Ready to get started?</p>
-      <%= link_to "Sign Up Now", new_user_registration_path, class: "btn btn-success" %>
-      <p class="mt-2">
+      <div class="btn-group mb-3" role="group">
+        <%= link_to "Try Demo", demo_path, class: "btn btn-success btn-lg" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-lg" %>
+      </div>
+      <p class="mt-3">
         <small>Already have an account? <%= link_to "Log in", new_user_session_path %></small>
       </p>
     </div>

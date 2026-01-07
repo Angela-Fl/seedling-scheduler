@@ -89,6 +89,9 @@
               </li>
             <% else %>
               <li class="nav-item">
+                <%= link_to "Try Demo", demo_path, class: "btn btn-success btn-sm nav-link" %>
+              </li>
+              <li class="nav-item">
                 <%= link_to "Log In", new_user_session_path, class: "nav-link" %>
               </li>
               <li class="nav-item">
@@ -99,6 +102,9 @@
         </div>
       </div>
     </nav>
+
+    <%# Demo mode banner %>
+    <%= render "shared/demo_banner" %>
 
     <%# Main Content Container %>
     <div class="container mt-4">

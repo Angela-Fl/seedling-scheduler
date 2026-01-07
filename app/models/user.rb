@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :feedback_submissions, dependent: :destroy
 
   def admin?
+    return false if demo?
     return false if email.blank?
     admin_emails = ENV["ADMIN_EMAILS"].to_s.split(",").map(&:strip)
     return false if admin_emails.empty?

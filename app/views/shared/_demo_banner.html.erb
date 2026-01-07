@@ -1,0 +1,10 @@
+<% if user_signed_in? && current_user.demo? %>
+  <div class="alert alert-info mb-0 rounded-0 text-center" role="alert">
+    <div class="container">
+      <strong>🌱 You're exploring a demo garden.</strong>
+      Changes won't be saved.
+      <%= link_to "Create your free account", exit_demo_path, class: "btn btn-success btn-sm ms-2" %>
+      to plan your own garden!
+    </div>
+  </div>
+<% end %>

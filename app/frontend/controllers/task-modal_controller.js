@@ -98,16 +98,24 @@ export default class extends Controller {
           detail: { message: 'Task saved successfully', type: 'success' }
         }))
       } else {
-        const errorText = await response.text()
-        console.error('Server error:', errorText)
+        // Get the actual error message from the server
+        let errorMessage = 'Failed to save task'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (e) {
+          // If JSON parsing fails, try to get text
+          const errorText = await response.text()
+          console.error('Server error:', errorText)
+        }
         window.dispatchEvent(new CustomEvent('notification:show', {
-          detail: { message: 'Failed to save task', type: 'danger' }
+          detail: { message: errorMessage, type: 'danger' }
         }))
       }
     } catch (error) {
       console.error('Error saving task:', error)
       window.dispatchEvent(new CustomEvent('notification:show', {
-        detail: { message: 'Error saving task', type: 'danger' }
+        detail: { message: error.message || 'Error saving task', type: 'danger' }
       }))
     }
   }
