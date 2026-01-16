@@ -211,16 +211,28 @@ export default class extends Controller {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({ task: { due_date: info.event.startStr } })
       })
 
-      if (!response.ok) throw new Error('Update failed')
+      if (!response.ok) {
+        // Get the actual error message from the server
+        let errorMessage = 'Failed to reschedule'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (e) {
+          // JSON parsing failed, use default message
+          console.error('Failed to parse error response:', e)
+        }
+        throw new Error(errorMessage)
+      }
       this.showNotification('Task rescheduled', 'success')
     } catch (error) {
       info.revert()
-      this.showNotification('Failed to reschedule', 'danger')
+      this.showNotification(error.message || 'Failed to reschedule', 'danger')
     }
   }
 

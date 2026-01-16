@@ -33,7 +33,7 @@ console_command = '/rails/bin/rails console'
   path = "/up"
 
 [[vm]]
-  memory = '512mb'
+  memory = '1024mb'
   cpus = 1
   processes = ['app']
 

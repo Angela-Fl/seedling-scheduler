@@ -1,5 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: "users/registrations" }
+  devise_for :users, controllers: {
+    registrations: "users/registrations",
+    sessions: "sessions"
+  }
+
+  devise_scope :user do
+    get "/demo", to: "sessions#demo", as: :demo
+    get "/exit_demo", to: "sessions#exit_demo", as: :exit_demo
+  end
+
   resources :garden_entries
   root "tasks#index"
 

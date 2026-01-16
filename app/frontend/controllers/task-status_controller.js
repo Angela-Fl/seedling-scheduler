@@ -31,14 +31,16 @@ export default class extends Controller {
         // Notify calendar to reload
         window.dispatchEvent(new CustomEvent('calendar:reload'))
       } else {
-        throw new Error('Update failed')
+        // Get the actual error message from the server
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Update failed')
       }
     } catch (error) {
       // Rollback on error
       this.statusValue = previousStatus
       checkbox.checked = !checkbox.checked
       this.updateRowAppearance()
-      this.showNotification('Failed to update task', 'danger')
+      this.showNotification(error.message || 'Failed to update task', 'danger')
     }
   }
 
@@ -62,14 +64,16 @@ export default class extends Controller {
         // Notify calendar to reload
         window.dispatchEvent(new CustomEvent('calendar:reload'))
       } else {
-        throw new Error('Update failed')
+        // Get the actual error message from the server
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Update failed')
       }
     } catch (error) {
       // Rollback on error
       this.statusValue = previousStatus
       checkbox.checked = !checkbox.checked
       this.updateRowAppearance()
-      this.showNotification('Failed to update task', 'danger')
+      this.showNotification(error.message || 'Failed to update task', 'danger')
     }
   }
 
