@@ -124,6 +124,30 @@
   border-radius: 0.25rem;
 }
 
+/* Blinking border animation for Try Demo button */
+@keyframes blink-border {
+  0%, 100% {
+    border-color: white;
+  }
+  50% {
+    border-color: transparent;
+  }
+}
+
+.btn-demo-blink {
+  border: 2px solid white;
+  animation: blink-border 1.5s ease-in-out infinite;
+}
+
+/* Getting Started link - light yellow to distinguish from main nav */
+.navbar-nav .nav-link.nav-link-getting-started {
+  color: #F9E1A8 !important;
+}
+
+.navbar-nav .nav-link.nav-link-getting-started:hover {
+  color: #FBECC5 !important;
+}
+
 /* ========================================
    Calendar Customizations
    ======================================== */

@@ -1,6 +1,6 @@
 class SessionsController < Devise::SessionsController
-  skip_before_action :authenticate_user!, only: [:demo]
-  skip_before_action :block_demo_mutations, only: [:demo, :exit_demo]
+  skip_before_action :authenticate_user!, only: [ :demo ]
+  skip_before_action :block_demo_mutations, only: [ :demo, :exit_demo ]
 
   def demo
     demo_user = User.find_by(email: "demo@seedlingscheduler.com", demo: true)

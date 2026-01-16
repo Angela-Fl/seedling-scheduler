@@ -90,7 +90,7 @@ milkweed = demo_user.plants.create!(
   notes: "Native plant for monarchs. Use winter sowing method in milk jugs."
 )
 
-plants = [tomato, basil, pepper, zinnia, lettuce, zucchini, sunflower, milkweed]
+plants = [ tomato, basil, pepper, zinnia, lettuce, zucchini, sunflower, milkweed ]
 
 # Generate tasks
 puts "Generating tasks..."
