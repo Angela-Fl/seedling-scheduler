@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_06_211115) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_22_012507) do
   create_table "feedback_submissions", force: :cascade do |t|
     t.string "category", null: false
     t.datetime "created_at", null: false
@@ -41,6 +41,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_211115) do
     t.datetime "created_at", null: false
     t.string "days_to_sprout"
     t.integer "hardening_offset_days"
+    t.datetime "muted_at"
     t.string "name"
     t.text "notes"
     t.integer "plant_seedlings_offset_days"
@@ -51,6 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_211115) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.string "variety"
+    t.index ["muted_at"], name: "index_plants_on_muted_at"
     t.index ["user_id"], name: "index_plants_on_user_id"
   end
 

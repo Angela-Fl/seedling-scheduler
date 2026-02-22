@@ -1,8 +1,8 @@
 class PlantsController < ApplicationController
-  before_action :set_plant, only: [ :show, :edit, :update, :destroy, :regenerate_tasks ]
+  before_action :set_plant, only: [ :show, :edit, :update, :destroy, :regenerate_tasks, :mute, :unmute ]
 
   def index
-    @plants = current_user.plants.order(:name)
+    @plants = current_user.plants.order(Arel.sql("CASE WHEN muted_at IS NULL THEN 0 ELSE 1 END"), :name)
   end
 
   def show
@@ -44,6 +44,16 @@ class PlantsController < ApplicationController
   def regenerate_tasks
     @plant.generate_tasks!(Setting.frost_date)
     redirect_to @plant, notice: "Tasks regenerated based on current settings."
+  end
+
+  def mute
+    @plant.mute!
+    redirect_to plants_path, notice: "#{@plant.name} has been muted. Its tasks are now hidden."
+  end
+
+  def unmute
+    @plant.unmute!
+    redirect_to plants_path, notice: "#{@plant.name} has been unmuted. Its tasks are now visible."
   end
 
   private

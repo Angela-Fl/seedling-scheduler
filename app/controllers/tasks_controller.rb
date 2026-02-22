@@ -4,6 +4,8 @@ class TasksController < ApplicationController
   def index
     @tasks = current_user.tasks
       .includes(:plant)
+      .left_joins(:plant)
+      .where("plants.muted_at IS NULL OR tasks.plant_id IS NULL")
       .where("due_date >= ?", Date.current - Task::HISTORY_DAYS.days)
       .order(:due_date)
 

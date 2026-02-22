@@ -239,4 +239,41 @@ class PlantsControllerTest < ActionDispatch::IntegrationTest
     plant = Plant.last
     assert_equal 21, plant.plant_seeds_offset_days
   end
+
+  # ===================
+  # Mute/Unmute tests
+  # ===================
+
+  test "should mute plant" do
+    plant = plants(:zinnia)
+    assert_nil plant.muted_at
+
+    patch mute_plant_url(plant)
+
+    assert_redirected_to plants_url
+    plant.reload
+    assert_not_nil plant.muted_at
+  end
+
+  test "should unmute plant" do
+    plant = plants(:zinnia)
+    plant.mute!
+
+    patch unmute_plant_url(plant)
+
+    assert_redirected_to plants_url
+    plant.reload
+    assert_nil plant.muted_at
+  end
+
+  test "muted plant still visible in plants index" do
+    plant = plants(:zinnia)
+    plant.mute!
+
+    get plants_url
+
+    assert_response :success
+    assert_select "td", text: /Zinnia/
+    assert_select "span.badge", text: "Muted"
+  end
 end
