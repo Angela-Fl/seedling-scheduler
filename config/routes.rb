@@ -34,6 +34,8 @@ Rails.application.routes.draw do
   resources :plants do
     member do
       post :regenerate_tasks
+      patch :mute
+      patch :unmute
     end
   end
 

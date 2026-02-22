@@ -18,9 +18,12 @@
       </thead>
       <tbody>
         <% @plants.each do |plant| %>
-          <tr>
+          <tr style="<%= 'background-color: #dee2e6;' if plant.muted? %>">
             <td>
               <%= link_to plant.name, plant_path(plant), class: "text-decoration-none fw-bold" %>
+              <% if plant.muted? %>
+                <span class="badge bg-secondary ms-2">Muted</span>
+              <% end %>
             </td>
             <td><%= plant.variety %></td>
             <td>
@@ -30,6 +33,17 @@
               <div class="d-flex flex-column flex-md-row gap-2 plant-actions-mobile" role="group">
                 <%= link_to "View", plant_path(plant), class: "btn btn-sm btn-outline-primary" %>
                 <%= link_to "Edit", edit_plant_path(plant), class: "btn btn-sm btn-outline-secondary" %>
+                <% if plant.muted? %>
+                  <%= button_to "Unmute", unmute_plant_path(plant),
+                        method: :patch,
+                        class: "btn btn-sm btn-outline-success" %>
+                <% else %>
+                  <%= button_to "Mute", mute_plant_path(plant),
+                        method: :patch,
+                        class: "btn btn-sm",
+                        style: "border-color: #b38600; color: #b38600;",
+                        data: { turbo_confirm: "Mute #{plant.name}? Its tasks will be hidden from the calendar and task list." } %>
+                <% end %>
                 <%= link_to "Delete", plant_path(plant),
                       class: "btn btn-sm btn-outline-danger",
                       data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>

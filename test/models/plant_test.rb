@@ -213,4 +213,62 @@ class PlantTest < ActiveSupport::TestCase
   test "sowing_method enum values" do
     assert_equal %w[indoor_start direct_sow outdoor_start fridge_stratify], Plant.sowing_methods.keys
   end
+
+  # ===================
+  # Mute functionality tests
+  # ===================
+
+  test "muted? returns false for active plant" do
+    plant = plants(:zinnia)
+    assert_not plant.muted?
+  end
+
+  test "muted? returns true for muted plant" do
+    plant = plants(:zinnia)
+    plant.mute!
+    assert plant.muted?
+  end
+
+  test "mute! sets muted_at timestamp" do
+    plant = plants(:zinnia)
+    assert_nil plant.muted_at
+
+    plant.mute!
+
+    assert_not_nil plant.muted_at
+    assert plant.muted_at <= Time.current
+  end
+
+  test "unmute! clears muted_at timestamp" do
+    plant = plants(:zinnia)
+    plant.mute!
+    assert plant.muted?
+
+    plant.unmute!
+
+    assert_nil plant.muted_at
+    assert_not plant.muted?
+  end
+
+  test "active scope excludes muted plants" do
+    plant = plants(:zinnia)
+    user = users(:one)
+
+    assert_includes user.plants.active, plant
+
+    plant.mute!
+
+    assert_not_includes user.plants.active, plant
+  end
+
+  test "muted scope includes only muted plants" do
+    plant = plants(:zinnia)
+    user = users(:one)
+
+    assert_not_includes user.plants.muted, plant
+
+    plant.mute!
+
+    assert_includes user.plants.muted, plant
+  end
 end

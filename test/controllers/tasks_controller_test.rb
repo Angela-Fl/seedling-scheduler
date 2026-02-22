@@ -67,23 +67,24 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   test "index orders tasks by due_date" do
     # Create tasks with specific dates to verify ordering
-    plant = plants(:zinnia)
-    plant.tasks.destroy_all
+    user = users(:one)
+    user.tasks.destroy_all
 
+    plant = plants(:zinnia)
     task1 = plant.tasks.create!(
-      user: users(:one),
+      user: user,
       task_type: "plant_seeds",
       due_date: Date.current + 5.days,
       status: "pending"
     )
     task2 = plant.tasks.create!(
-      user: users(:one),
+      user: user,
       task_type: "begin_hardening_off",
       due_date: Date.current + 2.days,
       status: "pending"
     )
     task3 = plant.tasks.create!(
-      user: users(:one),
+      user: user,
       task_type: "plant_seedlings",
       due_date: Date.current + 8.days,
       status: "pending"
@@ -92,10 +93,10 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     get tasks_url
     assert_response :success
 
-    # Verify tasks in the database are being queried with correct order
-    tasks = Task.where("due_date >= ?", Date.current - Task::HISTORY_DAYS.days).order(:due_date)
-    assert tasks.length >= 3, "Should have at least 3 tasks"
-    assert_equal task2.id, tasks[0].id, "First task should be the one due soonest"
+    # Verify tasks are ordered by due_date (soonest first)
+    tasks = user.tasks.order(:due_date)
+    assert_equal 3, tasks.length
+    assert_equal [ task2.id, task1.id, task3.id ], tasks.pluck(:id), "Tasks should be ordered by due_date"
   end
 
   test "index includes plant names for tasks" do
@@ -242,5 +243,57 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :unprocessable_entity
+  end
+
+  # ===================
+  # Muted plant filtering tests
+  # ===================
+
+  test "index excludes tasks from muted plants" do
+    plant = plants(:zinnia)
+    plant.mute!
+
+    get tasks_url
+
+    assert_response :success
+    assert_select "td", text: /Zinnia/, count: 0
+  end
+
+  test "index includes tasks from active plants" do
+    get tasks_url
+
+    assert_response :success
+    assert_select "td", text: /Zinnia/
+  end
+
+  test "index JSON excludes tasks from muted plants" do
+    plant = plants(:zinnia)
+    plant.mute!
+
+    get tasks_url(format: :json)
+
+    assert_response :success
+    json_response = JSON.parse(response.body)
+    plant_names = json_response.map { |t| t["plant_name"] }.compact
+    assert_not_includes plant_names, "Zinnia"
+  end
+
+  test "index still shows general tasks when plants are muted" do
+    # Create a general task (no plant)
+    general_task = Task.create!(
+      user: users(:one),
+      task_type: "garden_task",
+      due_date: Date.current,
+      status: "pending",
+      notes: "General garden work"
+    )
+
+    # Mute all plants
+    users(:one).plants.each(&:mute!)
+
+    get tasks_url
+
+    assert_response :success
+    assert_select "td", text: /General garden task/
   end
 end

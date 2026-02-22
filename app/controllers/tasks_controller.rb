@@ -2,20 +2,23 @@ class TasksController < ApplicationController
   before_action :set_task, only: [ :update, :complete, :skip, :reset, :destroy ]
 
   def index
-    @tasks = current_user.tasks
+    base_query = current_user.tasks
       .includes(:plant)
-      .where("due_date >= ?", Date.current - Task::HISTORY_DAYS.days)
+      .left_joins(:plant)
+      .where("plants.muted_at IS NULL OR tasks.plant_id IS NULL")
       .order(:due_date)
 
     respond_to do |format|
-      format.html
+      format.html do
+        @tasks = base_query
+      end
       format.json do
-        tasks = @tasks
-
-        if params[:start] && params[:end]
+        tasks = if params[:start] && params[:end]
           start_date = Date.parse(params[:start])
           end_date = Date.parse(params[:end])
-          tasks = tasks.where(due_date: start_date..end_date)
+          base_query.where(due_date: start_date..end_date)
+        else
+          base_query.where("due_date >= ?", Date.current - Task::HISTORY_DAYS.days)
         end
 
         render json: tasks.map { |t| task_to_json(t) }

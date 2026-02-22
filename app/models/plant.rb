@@ -12,6 +12,10 @@ class Plant < ApplicationRecord
     fridge_stratify: "fridge_stratify"  # Hidden from UI, placeholder for future
   }, prefix: true
 
+  # Scopes for muted/active filtering
+  scope :active, -> { where(muted_at: nil) }
+  scope :muted, -> { where.not(muted_at: nil) }
+
   # Validations
   validates :name, presence: true
   validates :sowing_method, presence: true
@@ -83,6 +87,18 @@ class Plant < ApplicationRecord
         status: :pending
       )
     end
+  end
+
+  def muted?
+    muted_at.present?
+  end
+
+  def mute!
+    update!(muted_at: Time.current)
+  end
+
+  def unmute!
+    update!(muted_at: nil)
   end
 
   private
