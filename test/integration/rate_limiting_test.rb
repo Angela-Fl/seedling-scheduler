@@ -307,14 +307,18 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
   end
 
   test "throttled response returns 429 status code" do
-    # Trigger throttle
-    6.times do
-      post user_session_path, params: {
-        user: { email: @user.email, password: "wrongpassword" }
-      }
-    end
+    # Freeze time so all requests share the same Rack::Attack period window.
+    # Without this, a 20-second period boundary crossing between requests would
+    # reset the throttle counter, causing the test to flakily return 422.
+    travel_to Time.now do
+      6.times do
+        post user_session_path, params: {
+          user: { email: @user.email, password: "wrongpassword" }
+        }
+      end
 
-    assert_equal 429, response.status, "Should return 429 Too Many Requests"
+      assert_equal 429, response.status, "Should return 429 Too Many Requests"
+    end
   end
 
   test "throttled response includes helpful error message" do
