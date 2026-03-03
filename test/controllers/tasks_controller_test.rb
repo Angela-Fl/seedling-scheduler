@@ -96,7 +96,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     # Verify tasks are ordered by due_date (soonest first)
     tasks = user.tasks.order(:due_date)
     assert_equal 3, tasks.length
-    assert_equal [task2.id, task1.id, task3.id], tasks.pluck(:id), "Tasks should be ordered by due_date"
+    assert_equal [ task2.id, task1.id, task3.id ], tasks.pluck(:id), "Tasks should be ordered by due_date"
   end
 
   test "index includes plant names for tasks" do
