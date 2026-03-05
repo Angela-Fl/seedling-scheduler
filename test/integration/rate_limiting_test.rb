@@ -266,15 +266,17 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
   test "throttles general requests after 100 per minute" do
     sign_in @user
 
-    # Make 100 requests
-    100.times do
-      get root_path
-    end
+    freeze_time do
+      # Make 100 requests
+      100.times do
+        get root_path
+      end
 
-    # 101st request should be throttled
-    get root_path
-    assert_response :too_many_requests
-    assert response.headers["Retry-After"].present?
+      # 101st request should be throttled
+      get root_path
+      assert_response :too_many_requests
+      assert response.headers["Retry-After"].present?
+    end
   end
 
   test "asset requests are excluded from general throttle" do
