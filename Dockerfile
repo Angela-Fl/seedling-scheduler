@@ -35,8 +35,12 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config curl && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install --no-install-recommends -y nodejs && \
-    npm install -g npm@latest && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# The npm bundled with the NodeSource Node 20 package is used as-is. Installing
+# npm@latest broke the build once npm 12 shipped, since it requires Node >= 22,
+# while this image pins Node 20. The bundled npm also matches local development
+# and CI, which both take their npm from .node-version. Revisit when Node moves
+# to 22 -- and pin any npm version explicitly rather than tracking @latest.
 
 # Install application gems
 COPY Gemfile Gemfile.lock vendor ./
