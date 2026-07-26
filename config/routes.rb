@@ -14,6 +14,16 @@ Rails.application.routes.draw do
 
   get "/up", to: proc { [ 200, { "Content-Type" => "text/plain" }, [ "OK" ] ] }
 
+  # Reports the commit this image was built from, so a deploy can be identified
+  # without matching timestamps by hand. GIT_SHA is baked in by the Dockerfile;
+  # it reads "unknown" for local runs and any build that omitted the build arg.
+  # Defined as a proc, like /up, to stay outside ApplicationController's
+  # authenticate_user! filter.
+  get "/version", to: proc {
+    body = { git_sha: ENV.fetch("GIT_SHA", "unknown") }.to_json
+    [ 200, { "Content-Type" => "application/json" }, [ body ] ]
+  }
+
   resource :settings, only: [ :edit, :update ]
 
   # Static pages
