@@ -31,4 +31,15 @@ class VersionEndpointTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "unknown", JSON.parse(response.body)["git_sha"]
   end
+
+  test "version reports unknown when GIT_SHA is set but empty" do
+    # A deploy that passes --build-arg GIT_SHA= with an empty value leaves the
+    # variable present and blank, which must not be reported as a bare "".
+    ENV["GIT_SHA"] = ""
+
+    get "/version"
+
+    assert_response :success
+    assert_equal "unknown", JSON.parse(response.body)["git_sha"]
+  end
 end

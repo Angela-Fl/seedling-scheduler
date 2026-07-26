@@ -19,8 +19,13 @@ Rails.application.routes.draw do
   # it reads "unknown" for local runs and any build that omitted the build arg.
   # Defined as a proc, like /up, to stay outside ApplicationController's
   # authenticate_user! filter.
+  #
+  # presence, not ENV.fetch: passing --build-arg GIT_SHA= with an empty value
+  # overrides the Dockerfile's ARG default, so the variable is present but blank.
+  # fetch's default only covers a missing key and would report "" -- which reads
+  # like a malfunction rather than "nobody supplied a SHA".
   get "/version", to: proc {
-    body = { git_sha: ENV.fetch("GIT_SHA", "unknown") }.to_json
+    body = { git_sha: ENV["GIT_SHA"].presence || "unknown" }.to_json
     [ 200, { "Content-Type" => "application/json" }, [ body ] ]
   }
 
