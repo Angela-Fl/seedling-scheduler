@@ -1,41 +1,48 @@
+# Due dates are relative to the current date, not hardcoded. TasksController#index
+# (JSON) only returns tasks due on or after `Date.current - Task::HISTORY_DAYS`, so
+# fixed dates silently fall out of that window as time passes and take the tests
+# with them. Keep every pending task at or after today, preserving the natural
+# plant_seeds -> begin_hardening_off -> plant_seedlings progression.
+
 zinnia_start:
   user: one
   plant: zinnia
   task_type: plant_seeds
-  due_date: 2026-03-24
+  due_date: <%= (Date.current + 7.days).iso8601 %>
   status: pending
 
 zinnia_harden:
   user: one
   plant: zinnia
   task_type: begin_hardening_off
-  due_date: 2026-04-28
+  due_date: <%= (Date.current + 42.days).iso8601 %>
   status: pending
 
 zinnia_plant:
   user: one
   plant: zinnia
   task_type: plant_seedlings
-  due_date: 2026-05-12
+  due_date: <%= (Date.current + 56.days).iso8601 %>
   status: pending
 
 sunflower_plant:
   user: one
   plant: sunflower
   task_type: plant_seeds
-  due_date: 2026-05-12
+  due_date: <%= (Date.current + 56.days).iso8601 %>
   status: pending
 
+# Already done, so it sits in the recent past — still inside the history window.
 completed_task:
   user: one
   plant: snapdragon
   task_type: plant_seeds
-  due_date: 2026-02-24
+  due_date: <%= (Date.current - 3.days).iso8601 %>
   status: done
 
 tomato_task:
   user: two
   plant: tomato
   task_type: plant_seeds
-  due_date: 2026-03-15
+  due_date: <%= (Date.current + 14.days).iso8601 %>
   status: pending
