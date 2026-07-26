@@ -157,9 +157,22 @@ fly deploy --build-arg GIT_SHA=$(git rev-parse HEAD)
 
 Always pass `--build-arg GIT_SHA=...`. It stamps the image with the commit it was
 built from so `/version` can report it later (see *Identifying the deployed commit*
-below). `$( )` is a subexpression in PowerShell just as in bash, so the same command
-works from either shell. Omitting it still deploys fine, but `/version` will read
-`unknown` and you lose the ability to tell what is running.
+below). Omitting it still deploys fine, but `/version` will read `unknown` and you
+lose the ability to tell what is running.
+
+> **Check that the SHA actually expands.** `$( )` is a subexpression in PowerShell
+> as well as bash, but PowerShell only reaches a `git` on the Windows PATH — and
+> Git for Windows frequently refuses a `\\wsl$` UNC path over "dubious ownership".
+> When that happens the subexpression yields nothing, the flag is still passed as
+> an empty value, and the deploy silently produces an image that cannot identify
+> itself. This has already happened once.
+>
+> Run `git rev-parse HEAD` on its own in that PowerShell window first. If it does
+> not print a SHA, get the value from WSL and paste it literally:
+>
+> ```powershell
+> fly deploy --build-arg GIT_SHA=57f543f516082911a1cbb83a4c44534e799842d3
+> ```
 
 > **Note:** `fly deploy` builds whatever is in your **working directory** — not a
 > branch, and not what is on GitHub. Check out the commit you intend to ship before
@@ -192,7 +205,10 @@ an `ENV` in the final image stage, where the running app reads it. The `ARG` is
 declared at the end of the Dockerfile so a changed SHA only invalidates that last
 layer, leaving the gem install and Vite asset build cached.
 
-`unknown` in the response means the image was built without the build arg.
+`unknown` in the response means the image was built without a usable build arg —
+either the flag was omitted, or it was passed but expanded to an empty string.
+Check `/version` after every deploy; that is the point at which a missing SHA is
+cheap to correct.
 
 Fly's own metadata does **not** record a git SHA (`fly releases --json` shows
 `"Metadata": null`), so without this endpoint the only way to identify a running
