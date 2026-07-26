@@ -280,12 +280,18 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
   end
 
   test "asset requests are excluded from general throttle" do
-    # Simulate 150 asset requests (should not be throttled)
-    # Note: This test assumes assets would normally exceed the limit
+    # Rack::Attack is middleware, so it inspects /assets requests before routing
+    # regardless of what ultimately serves the file in production. The req/ip
+    # throttle skips them (see config/initializers/rack_attack.rb).
+    #
+    # 150 is well past the 100/minute limit that the test above proves applies
+    # to non-asset paths, so reaching the end un-throttled is the exclusion working.
+    150.times do
+      get "/assets/application.css"
+      assert_response :not_found unless response.successful?
+    end
 
-    # In a real scenario, asset requests don't go through Rails routing
-    # This is a conceptual test - adjust based on your asset handling
-    skip "Asset requests are typically handled by web server, not Rails"
+    assert_not_equal 429, response.status, "Asset requests should never be throttled"
   end
 
   # =============================================================================
