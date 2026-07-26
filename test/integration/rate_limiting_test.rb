@@ -296,16 +296,21 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
     # Clear cache to ensure clean state
     Rack::Attack.cache.store.clear
 
-    # Trigger login throttle
-    6.times do
-      post user_session_path, params: {
-        user: { email: @user.email, password: "wrongpassword" }
-      }
-    end
+    # Freeze time so all requests share the same Rack::Attack period window.
+    # Without this, a 20-second period boundary crossing between requests would
+    # reset the throttle counter and no throttled response would be produced.
+    travel_to Time.now do
+      # Trigger login throttle
+      6.times do
+        post user_session_path, params: {
+          user: { email: @user.email, password: "wrongpassword" }
+        }
+      end
 
-    retry_after = response.headers["Retry-After"]
-    assert_not_nil retry_after, "Retry-After header should be present"
-    assert retry_after.to_i > 0, "Retry-After should be a positive number"
+      retry_after = response.headers["Retry-After"]
+      assert_not_nil retry_after, "Retry-After header should be present"
+      assert retry_after.to_i > 0, "Retry-After should be a positive number"
+    end
   end
 
   test "throttled response returns 429 status code" do
@@ -324,15 +329,19 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
   end
 
   test "throttled response includes helpful error message" do
-    # Trigger throttle
-    6.times do
-      post user_session_path, params: {
-        user: { email: @user.email, password: "wrongpassword" }
-      }
-    end
+    # Freeze time so all requests share the same Rack::Attack period window
+    # (see the Retry-After test above).
+    travel_to Time.now do
+      # Trigger throttle
+      6.times do
+        post user_session_path, params: {
+          user: { email: @user.email, password: "wrongpassword" }
+        }
+      end
 
-    assert_match /too many requests/i, response.body.downcase,
-      "Response should include informative error message"
+      assert_match /too many requests/i, response.body.downcase,
+        "Response should include informative error message"
+    end
   end
 
   # =============================================================================
