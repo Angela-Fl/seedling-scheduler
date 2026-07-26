@@ -91,6 +91,7 @@ ENV GIT_SHA=${GIT_SHA}
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
+# Bind Rails directly to Fly's expected port. Thruster is deliberately not used
+# here -- see DEPLOYMENT.md. Can be overridden at runtime.
 EXPOSE 8080
 CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "8080"]

@@ -720,8 +720,8 @@ end
 - Solid Cable (database-backed WebSockets)
 
 **Deployment**:
-- Kamal (Docker deployment)
-- Thruster (HTTP caching/compression)
+- Fly.io (Docker container, see DEPLOYMENT.md)
+- Kamal (unused; retained from the Rails default setup)
 
 **Development Tools**:
 - Debug (debugging)
