@@ -152,8 +152,51 @@ explorer.exe \\wsl$\Ubuntu\home\adminang\projects\seedling_scheduler
 Open PowerShell in that directory, then:
 
 ```powershell
-fly deploy
+fly deploy --build-arg GIT_SHA=$(git rev-parse HEAD)
 ```
+
+Always pass `--build-arg GIT_SHA=...`. It stamps the image with the commit it was
+built from so `/version` can report it later (see *Identifying the deployed commit*
+below). `$( )` is a subexpression in PowerShell just as in bash, so the same command
+works from either shell. Omitting it still deploys fine, but `/version` will read
+`unknown` and you lose the ability to tell what is running.
+
+> **Note:** `fly deploy` builds whatever is in your **working directory** — not a
+> branch, and not what is on GitHub. Check out the commit you intend to ship before
+> deploying, and remember that uncommitted changes in the working tree go out too.
+
+---
+
+## Identifying the deployed commit
+
+The app exposes a public `/version` endpoint reporting the commit its image was
+built from:
+
+```bash
+curl https://seedlingscheduler.com/version
+# {"git_sha":"57f543f516082911a1cbb83a4c44534e799842d3"}
+```
+
+Compare it against local history to see exactly what is live:
+
+```bash
+git log --oneline $(curl -s https://seedlingscheduler.com/version | jq -r .git_sha)..HEAD
+```
+
+An empty result means production is up to date with your current branch; anything
+listed is undeployed.
+
+**How it works:** `.dockerignore` excludes `/.git/`, so the build cannot read the
+repository itself. The SHA is therefore passed in as a Docker `ARG` and promoted to
+an `ENV` in the final image stage, where the running app reads it. The `ARG` is
+declared at the end of the Dockerfile so a changed SHA only invalidates that last
+layer, leaving the gem install and Vite asset build cached.
+
+`unknown` in the response means the image was built without the build arg.
+
+Fly's own metadata does **not** record a git SHA (`fly releases --json` shows
+`"Metadata": null`), so without this endpoint the only way to identify a running
+release is matching deploy timestamps against commit timestamps by hand.
 
 ---
 

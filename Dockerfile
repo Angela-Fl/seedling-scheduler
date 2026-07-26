@@ -77,9 +77,21 @@ USER 1000:1000
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
 
+# Record the commit this image was built from so the running app can report it
+# at /version. Passed in at build time, since .dockerignore excludes /.git/ and
+# the build has no repository to inspect:
+#
+#   fly deploy --build-arg GIT_SHA=$(git rev-parse HEAD)
+#
+# Declared here at the end so that a new SHA only invalidates this layer rather
+# than the gem install and asset build above.
+ARG GIT_SHA="unknown"
+ENV GIT_SHA=${GIT_SHA}
+
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
+# Bind Rails directly to Fly's expected port. Thruster is deliberately not used
+# here -- see DEPLOYMENT.md. Can be overridden at runtime.
 EXPOSE 8080
 CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "8080"]

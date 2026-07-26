@@ -301,9 +301,25 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
   end
 
   test "session expires after 30 minutes of inactivity" do
-    skip "Devise timeoutable doesn't work reliably with ActiveSupport::Testing::TimeHelpers in integration tests"
-    # Note: The timeout feature IS configured in config/initializers/devise.rb (timeout_in: 30.minutes)
-    # and will work correctly in production. Testing it requires more complex session manipulation.
+    # Log in
+    post user_session_path, params: {
+      user: { email: @user.email, password: @password }
+    }
+    assert_redirected_to root_path
+
+    travel 31.minutes do
+      # Devise sends a timed-out GET back to the path that was attempted, so the
+      # user lands where they meant to go once they sign in again. The redirect
+      # target is NOT the sign-in page — check flash[:timedout] to confirm the
+      # timeout is what fired.
+      get plants_path
+      assert_redirected_to plants_path, "Timed-out GET should bounce back to the attempted path"
+      assert flash[:timedout], "Devise should flag the request as timed out"
+
+      # The session is gone, so retrying that path now demands a fresh sign-in.
+      follow_redirect!
+      assert_redirected_to new_user_session_path, "Should require sign-in after the session expires"
+    end
   end
 
   # =============================================================================

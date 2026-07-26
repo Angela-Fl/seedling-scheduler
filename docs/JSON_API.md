@@ -738,12 +738,42 @@ async function loadTaskWidget() {
 
 ## Rate Limiting
 
-**Current Status:** No rate limiting implemented
+**Current Status:** Enabled via Rack::Attack — see `config/initializers/rack_attack.rb`.
 
-**Recommendations for production:**
-- Implement rate limiting (e.g., Rack::Attack gem)
-- Suggested limit: 100 requests per minute per IP
-- Return `429 Too Many Requests` status when exceeded
+All API traffic falls under the general per-IP throttle. The remaining rules target
+Devise endpoints and are listed here because they apply to any client, not just the browser.
+
+| Throttle | Limit | Period | Keyed on |
+|----------|-------|--------|----------|
+| General requests | 100 | 1 minute | IP (paths under `/assets` are excluded) |
+| Login (`POST /users/sign_in`) | 5 | 20 seconds | Email, downcased |
+| Password reset (`POST /users/password`) | 3 | 5 minutes | Email, downcased |
+| Registration (`POST /users`) | 5 | 1 hour | IP |
+| Account unlock (`POST /users/unlock`) | 3 | 5 minutes | Email, downcased |
+| Confirmation resend (`POST /users/confirmation`) | 3 | 5 minutes | Email, downcased |
+
+Email-keyed throttles downcase the address first, so case variations cannot be used
+to bypass the limit.
+
+### Throttled Response
+
+Exceeding a limit returns **`429 Too Many Requests`** with a `Retry-After` header
+giving the throttle's period in seconds:
+
+```
+HTTP/1.1 429 Too Many Requests
+Content-Type: text/html
+Retry-After: 60
+```
+
+Note that the body is HTML rather than JSON, even for requests to `.json` endpoints.
+Clients should check the status code rather than attempting to parse the body, and
+should honor `Retry-After` before retrying.
+
+**Possible future improvements:**
+- Return a JSON body for throttled requests to `.json` endpoints
+- Swap the in-memory throttle store for a shared one if the app ever runs on more
+  than one machine (counters are currently per-process)
 
 ---
 

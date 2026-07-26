@@ -2,6 +2,9 @@
 require "rubygems"
 require "bundler/setup"
 
-ARGV.unshift("--ensure-latest")
+# --ensure-latest is deliberately not passed here. It fails the scan whenever the
+# locked gem trails the newest published release, which turns CI red on unrelated
+# work. Dependabot already opens a PR for each brakeman release, so version bumps
+# still get prompted -- just as a PR rather than a broken build.
 
 load Gem.bin_path("brakeman", "brakeman")

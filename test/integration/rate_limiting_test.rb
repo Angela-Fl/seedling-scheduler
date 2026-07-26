@@ -266,24 +266,32 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
   test "throttles general requests after 100 per minute" do
     sign_in @user
 
-    # Make 100 requests
-    100.times do
-      get root_path
-    end
+    freeze_time do
+      # Make 100 requests
+      100.times do
+        get root_path
+      end
 
-    # 101st request should be throttled
-    get root_path
-    assert_response :too_many_requests
-    assert response.headers["Retry-After"].present?
+      # 101st request should be throttled
+      get root_path
+      assert_response :too_many_requests
+      assert response.headers["Retry-After"].present?
+    end
   end
 
   test "asset requests are excluded from general throttle" do
-    # Simulate 150 asset requests (should not be throttled)
-    # Note: This test assumes assets would normally exceed the limit
+    # Rack::Attack is middleware, so it inspects /assets requests before routing
+    # regardless of what ultimately serves the file in production. The req/ip
+    # throttle skips them (see config/initializers/rack_attack.rb).
+    #
+    # 150 is well past the 100/minute limit that the test above proves applies
+    # to non-asset paths, so reaching the end un-throttled is the exclusion working.
+    150.times do
+      get "/assets/application.css"
+      assert_response :not_found unless response.successful?
+    end
 
-    # In a real scenario, asset requests don't go through Rails routing
-    # This is a conceptual test - adjust based on your asset handling
-    skip "Asset requests are typically handled by web server, not Rails"
+    assert_not_equal 429, response.status, "Asset requests should never be throttled"
   end
 
   # =============================================================================
@@ -294,16 +302,21 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
     # Clear cache to ensure clean state
     Rack::Attack.cache.store.clear
 
-    # Trigger login throttle
-    6.times do
-      post user_session_path, params: {
-        user: { email: @user.email, password: "wrongpassword" }
-      }
-    end
+    # Freeze time so all requests share the same Rack::Attack period window.
+    # Without this, a 20-second period boundary crossing between requests would
+    # reset the throttle counter and no throttled response would be produced.
+    travel_to Time.now do
+      # Trigger login throttle
+      6.times do
+        post user_session_path, params: {
+          user: { email: @user.email, password: "wrongpassword" }
+        }
+      end
 
-    retry_after = response.headers["Retry-After"]
-    assert_not_nil retry_after, "Retry-After header should be present"
-    assert retry_after.to_i > 0, "Retry-After should be a positive number"
+      retry_after = response.headers["Retry-After"]
+      assert_not_nil retry_after, "Retry-After header should be present"
+      assert retry_after.to_i > 0, "Retry-After should be a positive number"
+    end
   end
 
   test "throttled response returns 429 status code" do
@@ -322,15 +335,19 @@ class RateLimitingTest < ActionDispatch::IntegrationTest
   end
 
   test "throttled response includes helpful error message" do
-    # Trigger throttle
-    6.times do
-      post user_session_path, params: {
-        user: { email: @user.email, password: "wrongpassword" }
-      }
-    end
+    # Freeze time so all requests share the same Rack::Attack period window
+    # (see the Retry-After test above).
+    travel_to Time.now do
+      # Trigger throttle
+      6.times do
+        post user_session_path, params: {
+          user: { email: @user.email, password: "wrongpassword" }
+        }
+      end
 
-    assert_match /too many requests/i, response.body.downcase,
-      "Response should include informative error message"
+      assert_match /too many requests/i, response.body.downcase,
+        "Response should include informative error message"
+    end
   end
 
   # =============================================================================
