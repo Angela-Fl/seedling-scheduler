@@ -33,14 +33,19 @@ FROM base AS build
 # Install packages needed to build gems and Node.js for Vite
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config curl && \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
     apt-get install --no-install-recommends -y nodejs && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
-# The npm bundled with the NodeSource Node 20 package is used as-is. Installing
-# npm@latest broke the build once npm 12 shipped, since it requires Node >= 22,
-# while this image pins Node 20. The bundled npm also matches local development
-# and CI, which both take their npm from .node-version. Revisit when Node moves
-# to 22 -- and pin any npm version explicitly rather than tracking @latest.
+# Keep this major in step with .node-version, which is what local development
+# and CI both read.
+#
+# The npm bundled with the NodeSource package is used as-is -- npm is only
+# needed here for `npm ci`, and using the bundled one keeps all three
+# environments on the same npm. Do not reintroduce `npm install -g npm@latest`:
+# it broke every deploy once npm 12 shipped requiring Node >= 22 while this
+# image still pinned Node 20. Node 24 satisfies npm 12 today, but @latest is an
+# unpinned moving target that will drift out from under this image again. If a
+# newer npm is ever needed, pin the version explicitly.
 
 # Install application gems
 COPY Gemfile Gemfile.lock vendor ./
