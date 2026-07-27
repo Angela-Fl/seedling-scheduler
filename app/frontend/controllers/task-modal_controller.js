@@ -6,14 +6,20 @@ export default class extends Controller {
   connect() {
     this.modal = new window.bootstrap.Modal(document.getElementById('taskModal'))
 
+    // Hold on to the bound references: bind() returns a new function on every
+    // call, so binding again in disconnect() removes nothing and leaves this
+    // controller listening after its modal has been disposed.
+    this.boundCreateHandler = this.handleCreate.bind(this)
+    this.boundEditHandler = this.handleEdit.bind(this)
+
     // Listen for calendar events
-    window.addEventListener('calendar:create', this.handleCreate.bind(this))
-    window.addEventListener('calendar:edit', this.handleEdit.bind(this))
+    window.addEventListener('calendar:create', this.boundCreateHandler)
+    window.addEventListener('calendar:edit', this.boundEditHandler)
   }
 
   disconnect() {
-    window.removeEventListener('calendar:create', this.handleCreate.bind(this))
-    window.removeEventListener('calendar:edit', this.handleEdit.bind(this))
+    window.removeEventListener('calendar:create', this.boundCreateHandler)
+    window.removeEventListener('calendar:edit', this.boundEditHandler)
     if (this.modal) this.modal.dispose()
   }
 
