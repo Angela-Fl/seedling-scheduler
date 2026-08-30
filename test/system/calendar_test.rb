@@ -78,6 +78,14 @@ class CalendarTest < ApplicationSystemTestCase
     click_link "Calendar"
     sleep 2
 
+    # Chrome's log buffer belongs to the driver, not the page, and the suite runs
+    # every test through one browser in a single process. Whatever an earlier test
+    # logged is still queued here and would be read below as this test's own --
+    # garden_entries' blank-title case legitimately logs a 422. Drain it now: the
+    # stale listeners throw on calendar:create, which the button below dispatches,
+    # so nothing this test is looking for has happened yet.
+    page.driver.browser.logs.get(:browser)
+
     click_button "+ New Task"
     assert_selector "#taskModal.show", wait: 5
 
