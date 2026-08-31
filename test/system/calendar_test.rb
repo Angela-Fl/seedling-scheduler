@@ -65,6 +65,39 @@ class CalendarTest < ApplicationSystemTestCase
     end
   end
 
+  test "task modal raises no errors after navigating away and back" do
+    visit calendar_tasks_path
+    sleep 2
+
+    # Turbo navigation rather than a full reload, so any listener the modal
+    # controller registered on window survives the round trip. If disconnect()
+    # fails to remove them, the orphaned listeners call show() on a modal that
+    # has already been disposed.
+    click_link "Table"
+    assert_selector ".task-tab-active", text: "Table", wait: 5
+    click_link "Calendar"
+    sleep 2
+
+    # Chrome's log buffer belongs to the driver, not the page, and the suite runs
+    # every test through one browser in a single process. Whatever an earlier test
+    # logged is still queued here and would be read below as this test's own --
+    # garden_entries' blank-title case legitimately logs a 422. Drain it now: the
+    # stale listeners throw on calendar:create, which the button below dispatches,
+    # so nothing this test is looking for has happened yet.
+    page.driver.browser.logs.get(:browser)
+
+    click_button "+ New Task"
+    assert_selector "#taskModal.show", wait: 5
+
+    # Assert on the console, not just on the modal: a stale listener throws
+    # without preventing the live one from opening the modal, so checking
+    # visibility alone cannot detect the leak.
+    errors = page.driver.browser.logs.get(:browser).select { |log| log.level == "SEVERE" }
+
+    assert_empty errors.map(&:message),
+      "Expected no JavaScript errors after re-entering the calendar page"
+  end
+
   test "view switcher changes calendar layout" do
     visit calendar_tasks_path
 
