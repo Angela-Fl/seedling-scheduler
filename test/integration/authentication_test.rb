@@ -16,7 +16,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: { email: @user.email, password: @password }
     }
-    assert_redirected_to root_path
+    assert_redirected_to tasks_path
     follow_redirect!
     assert_response :success
   end
@@ -41,7 +41,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: { email: @user.email, password: @password, remember_me: "1" }
     }
-    assert_redirected_to root_path
+    assert_redirected_to tasks_path
     assert cookies[:remember_user_token].present?, "Remember me cookie should be set"
   end
 
@@ -149,7 +149,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_redirected_to root_path
+    assert_redirected_to tasks_path
 
     # Verify password was changed
     @user.reload
@@ -291,7 +291,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: { email: @user.email, password: @password }
     }
-    assert_redirected_to root_path
+    assert_redirected_to tasks_path
 
     # Simulate activity at 29 minutes
     travel 29.minutes do
@@ -305,7 +305,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: { email: @user.email, password: @password }
     }
-    assert_redirected_to root_path
+    assert_redirected_to tasks_path
 
     travel 31.minutes do
       # Devise sends a timed-out GET back to the path that was attempted, so the
@@ -331,7 +331,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     post user_session_path, params: {
       user: { email: @user.email, password: @password }
     }
-    assert_redirected_to root_path
+    assert_redirected_to tasks_path
 
     # Log out
     delete destroy_user_session_path

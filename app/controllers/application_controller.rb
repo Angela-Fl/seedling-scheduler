@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :block_demo_mutations
 
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || tasks_path
+  end
+
   private
 
   def block_demo_mutations

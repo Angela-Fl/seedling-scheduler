@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   resources :garden_entries
-  root "tasks#index"
+  root "pages#getting_started"
 
   get "/up", to: proc { [ 200, { "Content-Type" => "text/plain" }, [ "OK" ] ] }
 
