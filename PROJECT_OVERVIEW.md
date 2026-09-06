@@ -1,9 +1,9 @@
 # Seedling Scheduler - Project Overview
 
-**Last Updated:** 2025-12-14
-**Rails Version:** 8.1.1
+**Last Updated:** 2026-09-05
+**Rails Version:** 8.1.3.1
 **Ruby Version:** 3.3+
-**Build Tool:** Vite 5.4
+**Build Tool:** Vite 6.4
 
 ---
 
@@ -223,6 +223,20 @@ Visual cues throughout UI for quick task type identification.
 ```bash
 bin/dev  # Starts Rails + Vite dev server (Foreman)
 ```
+
+`bin/dev` runs Foreman against `Procfile.dev`, which starts Rails on port 3000
+and the Vite dev server on port 3036, giving hot module replacement for
+`app/frontend/`. Notes:
+
+- Foreman is installed on demand by `bin/dev` rather than declared in the
+  `Gemfile`, because running it under Bundler leaks the parent bundle context
+  into the processes it spawns.
+- `Procfile.dev` pins `bin/rails server -p 3000`. Foreman otherwise injects its
+  own `PORT` (base 5000, +100 per process), which would move Rails off 3000.
+- The first Vite start takes up to a couple of minutes while it pre-bundles
+  dependencies into `node_modules/.vite`; later starts are quick.
+- `bin/rails server` alone still works without HMR, via the `autoBuild` setting
+  in `config/vite.json`.
 
 ### Production
 ```bash

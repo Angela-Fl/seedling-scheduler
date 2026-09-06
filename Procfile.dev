@@ -1,2 +1,4 @@
 vite: bin/vite dev
-web: bin/rails server
+# -p 3000 is required: Foreman injects its own PORT (5000 + 100 per process),
+# which would otherwise move the Rails server off the documented port.
+web: bin/rails server -p 3000
