@@ -36,9 +36,6 @@ gem "bootsnap", require: false
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
 gem "kamal", require: false
 
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
-
 # Use Devise for authentication
 gem "devise"
 
@@ -74,6 +71,6 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  # Pin Minitest to 5.x for Rails 8.1 compatibility
+  # Pin Minitest major version explicitly so Dependabot flags the next major bump
   gem "minitest", "~> 6.0"
 end
