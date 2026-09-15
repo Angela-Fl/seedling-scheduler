@@ -25,8 +25,8 @@ Seedling Scheduler automatically calculates when to start seeds indoors, begin h
 - Ruby 3.3+
 - Rails 8.1+
 - SQLite 3
-- Node.js 18+ (for Vite and frontend assets)
-- npm 9+ (comes with Node.js)
+- Node.js 24 (pinned in `.node-version`, and what CI builds against)
+- npm (comes with Node.js)
 
 ### Installation
 
@@ -55,7 +55,12 @@ bin/vite build
 bin/dev
 ```
 
-The `bin/dev` command starts both the Rails server and the Vite development server using Foreman. Visit `http://localhost:3000` to see your task dashboard.
+The `bin/dev` command starts both the Rails server and the Vite development server using Foreman, reading the process list from `Procfile.dev`. Visit `http://localhost:3000` to see your task dashboard; the Vite dev server runs alongside it on port 3036 and gives you hot module replacement, so edits to `app/frontend/` patch the running page instead of forcing a full rebuild.
+
+Two things to expect on first run:
+
+- If Foreman is not installed, `bin/dev` installs it for you. It is deliberately kept out of the `Gemfile` — running Foreman inside Bundler leaks the parent bundle context into the processes it spawns.
+- The initial Vite start is slow (up to a couple of minutes) while it pre-bundles dependencies. Later starts are fast, because the result is cached in `node_modules/.vite`. Until Vite is listening, Rails falls back to building assets on demand, so the first page load during that window can be slow.
 
 Alternatively, you can run them separately:
 ```bash
@@ -65,6 +70,8 @@ bin/rails server
 # Terminal 2: Vite dev server
 bin/vite dev
 ```
+
+Running `bin/rails server` on its own also works, without hot module replacement: `config/vite.json` sets `autoBuild` for development, so Rails rebuilds the bundle on demand and serves it from `public/vite-dev`.
 
 ## Basic Usage
 
